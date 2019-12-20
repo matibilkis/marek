@@ -123,20 +123,21 @@ class MegaFrontEnd():
         fav_keys=[]
         for tau in [100, 200]:
             for min_ep in [0.01, 0.1]:
-                exper = training.Experiment(searching_method = "ep-greedy", layers=self.layers, min_ep = min_ep, time_tau = tau,  ep=ep,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay",guessing_rule=self.guessing_rule, efficient_time=self.efficient_time)
-                exper.train(bob)
+                for method_guess in ["undefined", "thompson-sampling"]:
+                    exper = training.Experiment(searching_method = "ep-greedy", layers=self.layers, min_ep = min_ep, time_tau = tau,  ep=ep,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay",guessing_rule=self.guessing_rule, efficient_time=self.efficient_time, method_guess = method_guess)
+                    exper.train(bob)
 
-                with open(str(exper.layers)+"L"+str(exper.number_phases)+"PH"+str(exper.resolution)+"R/number_rune.txt", "r") as f:
-                    c = f.readlines()[0]
-                    f.close()
+                    with open(str(exper.layers)+"L"+str(exper.number_phases)+"PH"+str(exper.resolution)+"R/number_rune.txt", "r") as f:
+                        c = f.readlines()[0]
+                        f.close()
 
-                dict["run_"+str(c)] = {}
-                dict["run_"+str(c)]["label"] = "max("+ str(min_ep) +", e^-t/"+str(tau) +")-greedy "
-                dict["run_"+str(c)]["info"] = [exper.number_phases, exper.amplitude, exper.layers, exper.resolution, exper.searching_method, exper.guessing_rule, exper.method_guess, exper.number_bobs, exper.bound_displacements, exper.efficient_time,exper.ts_method]
-                dict["run_"+str(c)]["info_ep"] = [exper.ep_method, exper.ep, exper.min_ep, exper.time_tau]
-                dict["run_"+str(c)]["info_ucb"] = [exper.ucb_method]
+                    dict["run_"+str(c)] = {}
+                    dict["run_"+str(c)]["label"] = "max("+ str(min_ep) +", e^-t/"+str(tau) +")-greedy "
+                    dict["run_"+str(c)]["info"] = [exper.number_phases, exper.amplitude, exper.layers, exper.resolution, exper.searching_method, exper.guessing_rule, exper.method_guess, exper.number_bobs, exper.bound_displacements, exper.efficient_time,exper.ts_method]
+                    dict["run_"+str(c)]["info_ep"] = [exper.ep_method, exper.ep, exper.min_ep, exper.time_tau]
+                    dict["run_"+str(c)]["info_ucb"] = [exper.ucb_method]
 
-                fav_keys.append("run_"+str(c))
+                    fav_keys.append("run_"+str(c))
 
         plot_dict = filter_keys(dict,fav_keys)
         save_obj(plot_dict, "exp-ep-greedy-Dolinar", exper.layers, exper.number_phases, exper.resolution, bob)
@@ -203,5 +204,5 @@ class MegaFrontEnd():
 #
 #### 2 LAYERS ###
 mega = MegaFrontEnd(layers=2, guessing_rule="None")
-mega.RunAll(total_episodes=5*10**0, bob=12)
+mega.RunAll(total_episodes=5*10**5, bob=12)
 # mega.single_run()
