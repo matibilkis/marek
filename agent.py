@@ -223,7 +223,7 @@ class Agent(basics.Basics):
                     to_max = []
                     for q in qs:
                         value_inside = n_visits[actions]*self.kl(self.q_table[self.layer][tuple(self.outcomes_observed)][tuple(self.actions_index_did)][actions], q)
-                        if value_inside <= np.log(self.experiments_did):
+                        if value_inside <= np.log(self.experiments_did+1):
                             to_max.append(value_inside)
                         else:
                             to_max.append(-1)
@@ -298,9 +298,10 @@ class Agent(basics.Basics):
                             beta2, label2 = b11, l11
                         aa= self.alphas_guess[tuple([n1,n2,l0,label2])]
                         bbb = self.betas_guess[tuple([n1,n2,l0,label2])]
-                        ph = [-1,1][np.argmax((aa + bbb)/np.array(bbb))]
+                        ph = self.possible_phases[np.argmax((aa + bbb)/np.array(bbb))]
 
                         p+=(1-self.pflip)*self.P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2) + (self.pflip*self.P(-ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(-ph*self.amplitude, beta2 ,1/np.sqrt(2), n2))
+                        print()
                     return p/self.number_phases
                 else:
                     # return self.probability_going_Q_greedy_ml()
@@ -438,7 +439,7 @@ class Agent(basics.Basics):
                     self.q_table[layer][tuple(self.outcomes_observed[:layer])][tuple(self.actions_index_did[:(layer+1)])] += learning_rate*(   np.max( self.q_table[layer+1][tuple(self.outcomes_observed[:(layer+1)])][ tuple(self.actions_index_did[:(layer+1)])   ]   )   - self.q_table[layer][tuple(self.outcomes_observed[:layer])][tuple(self.actions_index_did[:(layer+1)])])
 
                 if self.method=="thompson-sampling":
-                    if self.ts_method == "update_to_q":
+                    if self.ts_method != "update_to_q":
 
                         self.alphas_search[layer][tuple(self.outcomes_observed[:layer])][tuple(self.actions_index_did[:(layer+1)])] += self.soft_ts*(reward)
                         self.betas_search[layer][tuple(self.outcomes_observed[:layer])][tuple(self.actions_index_did[:(layer+1)])] +=  (1- self.soft_ts*reward)
@@ -525,7 +526,7 @@ class Agent(basics.Basics):
                         to_max = []
                         for q in qs:
                             value_inside = n_visits[actions]*self.kl( self.guess_q_table[tuple(self.outcomes_observed)][tuple(self.actions_index_did)][actions], q)
-                            if value_inside <= np.log(self.experiments_did):
+                            if value_inside <= np.log(self.experiments_did+1):
                                 to_max.append(value_inside)
                             else:
                                 to_max.append(-1)

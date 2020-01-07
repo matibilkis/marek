@@ -260,7 +260,6 @@ class Experiment():
         if bob_id!="No-id": #This is because there are problems with multiprocessing and the random number generator otherwise (all bobs the same, twins bobs xD)
             np.random.seed(int(bob_id))
             random.seed(int(bob_id))
-        print(bob_id)
         for k in tqdm(range(1,self.states_wasted+1)):
             alice.pick_phase()
             bob.reset()

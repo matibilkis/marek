@@ -93,6 +93,62 @@ class MegaFrontEnd():
         save_obj(dict, "interestings", exper.layers, exper.number_phases, exper.resolution, bob, total_episodes)
         return
 
+    def RunUCB_TS(self, total_episodes=10**3, bob=1):
+        dict={}
+
+        fav_keys=[]
+        method = "ucb"
+        for ucbm in ["ucb1","ucb2","ucb3"]:
+            exper = training.Experiment(searching_method = method, layers=self.layers, ucb_method=ucbm , resolution=self.resolution, bound_displacements=self.bound_displacements,  states_wasted=total_episodes, guessing_rule=self.guessing_rule, efficient_time=self.efficient_time)
+            exper.train(bob)
+
+            with open(str(exper.layers)+"L"+str(exper.number_phases)+"PH"+str(exper.resolution)+"R/number_rune.txt", "r") as f:
+                c = f.readlines()[0]
+                f.close()
+
+            dict["run_"+str(c)] = {}
+            dict["run_"+str(c)]["label"] = ucbm
+            dict["run_"+str(c)]["info"] = [exper.number_phases, exper.amplitude, exper.layers, exper.resolution, exper.searching_method, exper.guessing_rule, exper.method_guess, exper.number_bobs,exper.bound_displacements, exper.efficient_time,exper.ts_method]
+            dict["run_"+str(c)]["info_ep"] = [exper.ep_method, exper.ep, exper.min_ep, exper.time_tau]
+            dict["run_"+str(c)]["info_ucb"] = [exper.ucb_method]
+            fav_keys.append("run_"+str(c))
+
+        plot_dict = filter_keys(dict,fav_keys)
+        save_obj(plot_dict, "ucbs", exper.layers, exper.number_phases, exper.resolution, bob, total_episodes)
+        ploting(plot_dict, mode="minimax")
+        if bob>1:
+            ploting(plot_dict, mode="stds")
+
+        fav_keys=[]
+        method = "thompson-sampling"
+        for soft in [0.01,0.1,1]:
+            for mode_ts in ["update_to_q", "None"]:
+
+                exper = training.Experiment(searching_method = method, layers=self.layers ,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes, guessing_rule=self.guessing_rule, soft_ts=soft, efficient_time=self.efficient_time, ts_method=mode_ts)
+                exper.train(bob)
+
+                with open(str(exper.layers)+"L"+str(exper.number_phases)+"PH"+str(exper.resolution)+"R/number_rune.txt", "r") as f:
+                    c = f.readlines()[0]
+                    f.close()
+
+                dict["run_"+str(c)] = {}
+                dict["run_"+str(c)]["label"] = str(soft)+"-TS"
+                dict["run_"+str(c)]["info"] = [exper.number_phases, exper.amplitude, exper.layers, exper.resolution, exper.searching_method, exper.guessing_rule, exper.method_guess, exper.number_bobs,exper.bound_displacements, exper.efficient_time, exper.ts_method]
+                dict["run_"+str(c)]["info_ep"] = [exper.ep_method, exper.ep, exper.min_ep, exper.time_tau]
+                dict["run_"+str(c)]["info_ucb"] = [exper.ucb_method]
+                fav_keys.append("run_"+str(c))
+
+        plot_dict = filter_keys(dict,fav_keys)
+        save_obj(plot_dict, "TS", exper.layers, exper.number_phases, exper.resolution, bob)
+        ploting(plot_dict, mode="minimax")
+        if bob>1:
+            ploting(plot_dict, mode="stds")
+
+
+        save_obj(dict, "ucbs_TSs", exper.layers, exper.number_phases, exper.resolution, bob)
+        return
+
+
     def RunAll(self, total_episodes=10**3, bob=1):
         dict={}
         method = "ep-greedy"
@@ -147,7 +203,7 @@ class MegaFrontEnd():
 
         fav_keys=[]
         method = "ucb"
-        for ucbm in ["ucb1", "ucb2", "ucb3", "ucb4"]:
+        for ucbm in ["ucb1", "ucb2", "ucb3"]:
             exper = training.Experiment(searching_method = method, layers=self.layers, ucb_method=ucbm , resolution=self.resolution, bound_displacements=self.bound_displacements,  states_wasted=total_episodes, guessing_rule=self.guessing_rule, efficient_time=self.efficient_time)
             exper.train(bob)
 
@@ -205,4 +261,5 @@ class MegaFrontEnd():
 #### 2 LAYERS ###
 mega = MegaFrontEnd(layers=2, guessing_rule="None")
 mega.RunAll(total_episodes=5*10**5, bob=12)
+# mega.RunUCB_TS(total_episodes=5*10**5, bob=48)
 # mega.single_run()
