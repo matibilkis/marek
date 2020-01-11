@@ -59,7 +59,7 @@ class Agent(basics.Basics):
         self.guessing_rule = guessing_rule
         self.ep_method=ep_method
         self.ts_method = ts_method
-        self.min_actions = -1 #just to put a number...
+        self.min_actions = -1 #minimum number of actions to do before beggining the method... we didn't use it in the end
 
 
         self.ep=ep
@@ -83,7 +83,7 @@ class Agent(basics.Basics):
 
         self.define_actions()
 
-        self.iota = np.log(2**(self.layers+1)*len(self.actions)/prob_eff)
+        self.iota = np.log(2**(self.layers+1)*len(self.actions)/prob_eff) #Regret MDPs, didn't work
         self.c = strange_factor_ucbeff
         self.algorithm=algorithm
         self.create_tables()
@@ -282,14 +282,33 @@ class Agent(basics.Basics):
                     return p/self.number_phases
 
                 elif self.layers == 2:
-                    l0 = np.where(self.q_table[0] == np.max(self.q_table[0]))[0]
+                    # l0 = np.where(self.q_table[0] == np.max(self.q_table[0]))[0]
+                    # b0, l0 = self.give_disp_value(l0)
+                    #
+                    # l10 = np.where(self.q_table[1][0][l0,:] == np.max(self.q_table[1][0][l0,:]))[0]
+                    # b10, l10 = self.give_disp_value(l10)
+                    #
+                    # l11 = np.where(self.q_table[1][1][l0,:] == np.max(self.q_table[1][1][l0,:]))[0]
+                    # b11, l11 = self.give_disp_value(l11)
+
+                    al0 = self.alphas_search[0]
+                    bl0 = self.betas_search[0]
+                    means = np.array(al0)/np.array(al0+bl0)
+                    l0 = np.where(means == np.max(means))[0]
                     b0, l0 = self.give_disp_value(l0)
 
-                    l10 = np.where(self.q_table[1][0][l0,:] == np.max(self.q_table[1][0][l0,:]))[0]
+                    al10 = self.alphas_search[1][0][l0,:]
+                    bl10 = self.betas_search[1][0][l0,:]
+                    means10 = np.array(al10)/np.array(al10+bl10)
+                    l10 = np.where(means10 == np.max(means10))[0]
                     b10, l10 = self.give_disp_value(l10)
 
-                    l11 = np.where(self.q_table[1][1][l0,:] == np.max(self.q_table[1][1][l0,:]))[0]
+                    al11 = self.alphas_search[1][1][l0,:]
+                    bl11 = self.betas_search[1][1][l0,:]
+                    means11 = np.array(al11)/np.array(al11+bl11)
+                    l11 = np.where(means11 == np.max(means11))[0]
                     b11, l11 = self.give_disp_value(l11)
+
 
                     for n1,n2 in zip([0,0,1,1],[0,1,0,1]):
                         if n1==0:
@@ -298,10 +317,8 @@ class Agent(basics.Basics):
                             beta2, label2 = b11, l11
                         aa= self.alphas_guess[tuple([n1,n2,l0,label2])]
                         bbb = self.betas_guess[tuple([n1,n2,l0,label2])]
-                        ph = self.possible_phases[np.argmax((aa + bbb)/np.array(bbb))]
-
+                        ph = self.possible_phases[np.argmax((aa)/np.array(aa + bbb))]
                         p+=(1-self.pflip)*self.P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2) + (self.pflip*self.P(-ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(-ph*self.amplitude, beta2 ,1/np.sqrt(2), n2))
-                        print()
                     return p/self.number_phases
                 else:
                     # return self.probability_going_Q_greedy_ml()
@@ -425,7 +442,6 @@ class Agent(basics.Basics):
                     if self.guessing_rule == "None":
 
                         self.q_table[layer][tuple(self.outcomes_observed[:layer])][tuple(self.actions_index_did[:(layer+1)])] += learning_rate*( np.max(self.guess_q_table[tuple(self.outcomes_observed)][tuple(self.actions_index_did)]) -self.q_table[layer][tuple(self.outcomes_observed[:layer])][tuple(self.actions_index_did[:(layer+1)])])
-
                         if self.method_guess == "thompson-sampling":
                             self.alphas_guess[tuple(self.outcomes_observed)][tuple(self.actions_index_did)][self.guess] += self.soft_ts*reward
                             self.betas_guess[tuple(self.outcomes_observed)][tuple(self.actions_index_did)][self.guess] += 1- (self.soft_ts*reward)

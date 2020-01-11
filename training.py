@@ -129,6 +129,10 @@ class Experiment():
 
         self.strawberry_fields = strawberry_fields
 
+        bb = basics.Basics(amplitude=self.amplitude, layers=1,bound_displacements=self.bound_displacements, resolution=self.resolution)
+        self.homodyne_limit = bb.homodyne()
+        del bb
+
         self.opt_kenn = np.genfromtxt("bounds_optimals_and_limits/kennedy_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
         self.opt_2l = np.genfromtxt("bounds_optimals_and_limits/2layers_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
         # self.opt_kenn_resolution = self.compute_optimal_kenn()
