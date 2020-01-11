@@ -481,6 +481,7 @@ class Experiment():
 
     def load_data(self, run="", tables=False):
         name_folder = str(self.layers)+"L"+str(self.number_phases)+"PH"+str(self.resolution)+"R"
+        print(name_folder)
         try:
             os.chdir(name_folder)
         except Exception:
@@ -493,13 +494,16 @@ class Experiment():
 
         with open(str(run)+"/info_run.txt", "r") as f:
             self.info = f.read()
+        print(str(run))
         if tables==True:
-            try:
 
-                self.q_table_evolution = np.load(str(run)+"/tables/0QsDISP_evolution.npy", allow_pickle=True)
-                self.n_table_evolution = np.load(str(run)+"/tables/0NsDISP_evolution.npy", allow_pickle=True)
-            except Exception:
-                print("Error: make sure save_tables=True when you run the program (it's an option of training.Experiment())")
+            self.q_table_evolution = np.load(str(run)+"/tables/0QsDISP_evolution.npy", allow_pickle=True)
+            self.n_table_evolution = np.load(str(run)+"/tables/0NsDISP_evolution.npy", allow_pickle=True)
+            self.q_table_guess_evolution = np.load(str(run)+"/tables/0qsGUESS_evolution.npy", allow_pickle=True)
+            self.n_table_guess_evolution = np.load(str(run)+"/tables/0NsGUESS_evolution.npy", allow_pickle=True)
+            print("successfully loaded the tables :)")
+            # except Exception:
+            #     print("Error: make sure save_tables=True when you run the program (it's an option of training.Experiment())")
         os.chdir("..")
         return
 
