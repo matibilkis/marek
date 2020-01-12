@@ -235,6 +235,11 @@ class Experiment():
         from the agent.py file
         """
 
+
+        if bob_id!="No-id": #This is because there are problems with multiprocessing and the random number generator otherwise (all bobs the same, twins bobs xD)
+            np.random.seed(int(bob_id)*datetime.now().microsecond)
+            random.seed(int(bob_id)*datetime.now().microsecond)
+
         bob = agent.Agent(layers = self.layers, resolution=self.resolution, number_phases =self.number_phases, bound_displacements = self.bound_displacements, guessing_rule = self.guessing_rule, searching_method=self.searching_method, ep=self.ep, ep_method=self.ep_method, ucb_method=self.ucb_method, soft_ts = self.soft_ts, efficiency=self.efficiency,method_guess=self.method_guess, min_ep=self.min_ep, time_tau = self.time_tau, pflip=self.pflip, algorithm=self.algorithm, strange_factor_ucbeff=self.strange_factor_ucbeff, prob_eff=self.prob_eff, ts_method=self.ts_method)
 
         bob.ep=self.ep
@@ -261,9 +266,7 @@ class Experiment():
 
         alice = environment.Environment(amplitude = self.amplitude, layers= self.layers, resolution = self.resolution, number_phases = self.number_phases, bound_displacements = self.bound_displacements, std=self.std_energy, efficiency=self.efficiency, pflip=self.pflip)
 
-        if bob_id!="No-id": #This is because there are problems with multiprocessing and the random number generator otherwise (all bobs the same, twins bobs xD)
-            np.random.seed(int(bob_id))
-            random.seed(int(bob_id))
+        print("training for ", self.states_wasted)
         for k in tqdm(range(1,self.states_wasted+1)):
             alice.pick_phase()
             bob.reset()
@@ -332,6 +335,8 @@ class Experiment():
                     np.save("temporal_data/"+str(bob_id)+"NsGUESS_evolution",n_guess_tables)
             return
         else:
+            np.save("locallearning_curves",np.array(learning_curves))
+
             np.save("temporal_data/learning_curves",np.array(learning_curves))
             np.save("temporal_data/stds",np.array([])) #just to use load_data method for all situations (in showing.py we omit this)
             np.save("temporal_data/minimax",np.array([]))

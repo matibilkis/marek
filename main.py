@@ -3,6 +3,7 @@ import gc
 from showing import ploting
 import pickle
 from misc import save_obj, filter_keys
+import numpy as np
 #In this program we compute the learning curves for the bandit problem in the Kennedy case, taking Dolinar's guessing rule.
 
 #Each arm is a possible displacement.
@@ -16,7 +17,7 @@ class MegaFrontEnd():
         self.efficient_time = efficient_time
         # self.methods_to_run = ["ep-greedy", "exp-ep-greedy", "ucb", "thompson-sampling"]
 
-    def single_run(self, total_episodes=10**2, bob=1):
+    def ucb4(self, total_episodes=10**2, bob=1):
         dict = {}
         method="ucb"
         ucbm="ucb4"
@@ -47,17 +48,70 @@ class MegaFrontEnd():
 
     def run_darkcounts(self,total_episodes=10**3,bobs=48):
         for method in ["ep-greedy", "ucb", "thompson-sampling"]:
-            for dkr in np.arange(0,1,.05):
-                exper = training.Experiment(searching_method = method, ucb_method="ucb1", ep=1, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay", time_tau=200, min_ep=0.01, guessing_rule="None", efficient_time=True, save_tables=True, efficiency=dkr)
+            for dkr in np.arange(.1,1,.1):
+                exper = training.Experiment(searching_method = method, ucb_method="ucb1", ep=1, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay", time_tau=200, min_ep=0.01, guessing_rule="None", efficient_time=True, efficiency=dkr)
                 exper.train(bobs)
         # return
 
     def run_phaseflip(self, total_episodes=10**3, bobs=48):
         for method in ["ep-greedy", "ucb", "thompson-sampling"]:
-            for pf in np.arange(0,.505,.05):
-                exper = training.Experiment(searching_method = method,ucb_method="ucb1", ep=1, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay", time_tau=200, min_ep=0.01, guessing_rule="None",efficient_time=True, save_tables=True, pflip=pf)
+            for pf in np.arange(0.05,.505,.05):
+                exper = training.Experiment(searching_method = method,ucb_method="ucb1", ep=1, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay", time_tau=200, min_ep=0.01, guessing_rule="None",efficient_time=True, pflip=pf)
                 exper.train(bobs)
         return
+
+
+    def ucbs(self, total_episodes, bob=12):
+        dict = {}
+        method="ucb"
+
+        fav_keys=[]
+        for ucbm in ["ucb1","ucb2","ucb3"]:
+
+            exper = training.Experiment(searching_method = method, layers=self.layers, ucb_method=ucbm , resolution=self.resolution, bound_displacements=self.bound_displacements,  states_wasted=total_episodes, guessing_rule=self.guessing_rule, efficient_time=False)
+            exper.train(bob)
+
+            with open(str(exper.layers)+"L"+str(exper.number_phases)+"PH"+str(exper.resolution)+"R/number_rune.txt", "r") as f:
+                c = f.readlines()[0]
+                f.close()
+            fav_keys.append("run_"+str(c))
+
+            dict["run_"+str(c)] = {}
+            dict["run_"+str(c)]["label"] = ucbm.capitalize()
+            dict["run_"+str(c)]["info"] = [exper.number_phases, exper.amplitude, exper.layers, exper.resolution, exper.searching_method, exper.guessing_rule, exper.method_guess, exper.number_bobs,exper.bound_displacements, exper.efficient_time,exper.ts_method]
+            dict["run_"+str(c)]["info_ep"] = [exper.ep_method, exper.ep, exper.min_ep, exper.time_tau]
+            dict["run_"+str(c)]["info_ucb"] = [exper.ucb_method]
+
+        plot_dict = filter_keys(dict,fav_keys)
+        ploting(plot_dict, mode="stds")
+        return
+
+
+    def ucb_single(self, total_episodes, bob=12):
+        dict = {}
+        method="ucb"
+
+        fav_keys=[]
+        for ucbm in ["ucb1", "ucb2"]:
+
+            exper = training.Experiment(searching_method = method, layers=self.layers, ucb_method=ucbm , resolution=self.resolution, bound_displacements=self.bound_displacements,  states_wasted=total_episodes, guessing_rule=self.guessing_rule, efficient_time=False)
+            exper.train(bob)
+
+            with open(str(exper.layers)+"L"+str(exper.number_phases)+"PH"+str(exper.resolution)+"R/number_rune.txt", "r") as f:
+                c = f.readlines()[0]
+                f.close()
+            fav_keys.append("run_"+str(c))
+
+            dict["run_"+str(c)] = {}
+            dict["run_"+str(c)]["label"] = ucbm.capitalize()
+            dict["run_"+str(c)]["info"] = [exper.number_phases, exper.amplitude, exper.layers, exper.resolution, exper.searching_method, exper.guessing_rule, exper.method_guess, exper.number_bobs,exper.bound_displacements, exper.efficient_time,exper.ts_method]
+            dict["run_"+str(c)]["info_ep"] = [exper.ep_method, exper.ep, exper.min_ep, exper.time_tau]
+            dict["run_"+str(c)]["info_ucb"] = [exper.ucb_method]
+
+        plot_dict = filter_keys(dict,fav_keys)
+        ploting(plot_dict, mode="stds")
+        return
+
 
     def RunAll(self, total_episodes=10**3, bob=1):
         dict={}

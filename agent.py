@@ -174,12 +174,17 @@ class Agent(basics.Basics):
             self.actions_value_did.append(action)
             return action_index, action
 
-        if (self.method=="ep-greedy")|(self.experiments_did<self.min_actions):
-            if (self.method != "ep-greedy")&(self.experiments_did==0):
-                self.ep_saved = self.ep
-                self.ep_method_saved = self.ep_method
-                self.ep_method = "classics"
-                self.ep = 1
+        # if (self.method=="ep-greedy")|(self.experiments_did<self.min_actions):
+        if (self.method=="ep-greedy"):
+
+            # if (self.method != "ep-greedy")&(self.experiments_did==0):
+            # if (self.method != "ep-greedy")&(self.experiments_did==0):
+            #
+            #     print("Trying stage!")
+            #     self.ep_saved = self.ep
+            #     self.ep_method_saved = self.ep_method
+            #     self.ep_method = "classics"
+            #     self.ep = 1
 
             if self.ep_method=="exp-decay": #set to whatever otherwise
                 self.ep = np.exp(-self.experiments_did/self.time_tau)
@@ -201,16 +206,20 @@ class Agent(basics.Basics):
                 self.actions_value_did.append(action)
                 return action_index, action
 
-        elif (self.method == "ucb")&(self.experiments_did>=self.min_actions):
-            if self.experiments_did == self.min_actions:
-                self.ep = self.ep_saved
-                self.ep_method = self.ep_method_saved
+        # elif (self.method == "ucb")&(self.experiments_did>=self.min_actions):
+        elif (self.method == "ucb"):
+            # if self.experiments_did == self.min_actions:
+            #     self.ep = self.ep_saved
+            #     self.ep_method = self.ep_method_saved
             n_visits = np.array(self.n_table[self.layer][tuple(self.outcomes_observed[:self.layer])][tuple(self.actions_index_did[:(self.layer+1)])])+1
             if self.ucb_method=="ucb1":
                 ucb =np.sqrt(2* np.log(np.sum(n_visits))/ n_visits)
+                # np.save("ucb1/ucb1"+str(self.experiments_did),ucb,allow_pickle=True)
+
             elif self.ucb_method=="ucb2":
                 time = np.sum(n_visits)
                 ucb = np.sqrt(2*np.log(1 + time*np.log(time)**2)/n_visits)
+                # np.save("ucb2/ucb2"+str(self.experiments_did),ucb,allow_pickle=True)
             elif self.ucb_method == "ucb3":
                 ucb = np.sqrt(2* np.log(np.sum(n_visits)))/ n_visits
             elif self.ucb_method == "ucb4":
@@ -232,14 +241,15 @@ class Agent(basics.Basics):
                 print("Error in the ucb method! is either ucb1, ucb2 or ucb3")
 
             ucb_q_table = self.q_table[self.layer][tuple(self.outcomes_observed)][tuple(self.actions_index_did)] + ucb
-            action_index = np.where(ucb_q_table == np.max( ucb_q_table ))[0]
+            action_index = np.where(ucb_q_table == max( ucb_q_table ))[0]
             action, action_index = self.give_disp_value(action_index)
             self.actions_index_did.append(action_index)
             self.actions_value_did.append(action)
 
             return action_index, action
 
-        elif (self.method == "thompson-sampling")&(self.experiments_did>=self.min_actions):
+        # elif (self.method == "thompson-sampling")&(self.experiments_did>=self.min_actions):
+        elif (self.method == "thompson-sampling"):
             if self.experiments_did == self.min_actions:
                 self.ep = self.ep_saved
                 self.ep_method = self.ep_method_saved
@@ -258,6 +268,7 @@ class Agent(basics.Basics):
             else:
                 label = label[0]
         except Exception:
+            print("errorcito!!")
             pass
         action = self.actions[label]
         self.layer +=1
@@ -466,6 +477,7 @@ class Agent(basics.Basics):
             return
 
     def QUCB_learn(self, reward):
+        #not in the paper
         self.experiments_did +=1
         for layer in range(self.layers):
 
@@ -508,7 +520,8 @@ class Agent(basics.Basics):
             return self.guess
 
         elif self.guessing_rule == "None":
-            if (self.method_guess == "ep-greedy")|(self.experiments_did<self.min_actions):
+            # if (self.method_guess == "ep-greedy")|(self.experiments_did<self.min_actions):
+            if (self.method_guess == "ep-greedy"):
                 if random.random() < self.ep:
                     self.guess = random.choice([0,1])
                     return self.guess
@@ -520,7 +533,8 @@ class Agent(basics.Basics):
                         else:
                             self.guess = self.guess[0]
                     return self.guess
-            elif (self.method_guess == "ucb") & (self.experiments_did>=self.min_actions):
+            # elif (self.method_guess == "ucb") & (self.experiments_did>=self.min_actions):
+            elif (self.method_guess == "ucb"):
                 if self.experiments_did == self.min_actions:
                     self.ep = self.ep_saved
                 n_visits = np.array(self.guess_visits_counter[tuple(self.outcomes_observed)][tuple(self.actions_index_did)])+1
@@ -549,14 +563,21 @@ class Agent(basics.Basics):
                         ucb[actions] = - self.guess_q_table[tuple(self.outcomes_observed)][tuple(self.actions_index_did)][actions] + max(to_max)
 
                 ucb_q_table = self.guess_q_table[tuple(self.outcomes_observed)][tuple(self.actions_index_did)] + ucb
-                self.guess = np.argmax(ucb_q_table)
+                self.guess = np.where(ucb_q_table == max(ucb_q_table))[0]
+                if len(self.guess)>1:
+                    self.guess = random.choice(self.guess)
+                else:
+                    self.guess = self.guess[0]
                 if isinstance(self.guess, list) == True:
                     if len(self.guess)>1:
                         self.guess = random.choice(self.guess)
                     else:
                         self.guess = self.guess[0]
+                # print("here", self.experiments_did, self.method_guess,self.ucb_method, self.actions_index_did, self.actions_value_did)
+
                 return self.guess
-            elif (self.method_guess == "thompson-sampling") & (self.experiments_did>=self.min_actions):
+            # elif (self.method_guess == "thompson-sampling") & (self.experiments_did>=self.min_actions):
+            elif (self.method_guess == "thompson-sampling"):
                 if self.experiments_did == self.min_actions:
                     self.ep=self.ep_saved
                 theta = np.random.beta(self.alphas_guess[tuple(self.outcomes_observed)][tuple(self.actions_index_did)],self.betas_guess[tuple(self.outcomes_observed)][tuple(self.actions_index_did)])
