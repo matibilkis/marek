@@ -268,7 +268,7 @@ class Agent(basics.Basics):
             else:
                 label = label[0]
         except Exception:
-            print("errorcito!!")
+            # print("errorcito!!")
             pass
         action = self.actions[label]
         self.layer +=1

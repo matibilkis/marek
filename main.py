@@ -48,14 +48,14 @@ class MegaFrontEnd():
 
     def run_darkcounts(self,total_episodes=10**3,bobs=48):
         for method in ["ep-greedy", "ucb", "thompson-sampling"]:
-            for dkr in np.arange(.1,1,.1):
+            for dkr in np.arange(.1,1,.2):
                 exper = training.Experiment(searching_method = method, ucb_method="ucb1", ep=1, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay", time_tau=200, min_ep=0.01, guessing_rule="None", efficient_time=True, efficiency=dkr)
                 exper.train(bobs)
         # return
 
     def run_phaseflip(self, total_episodes=10**3, bobs=48):
         for method in ["ep-greedy", "ucb", "thompson-sampling"]:
-            for pf in np.arange(0.05,.505,.05):
+            for pf in np.arange(0.05,.505,.1):
                 exper = training.Experiment(searching_method = method,ucb_method="ucb1", ep=1, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay", time_tau=200, min_ep=0.01, guessing_rule="None",efficient_time=True, pflip=pf)
                 exper.train(bobs)
         return
