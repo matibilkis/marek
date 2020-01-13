@@ -37,10 +37,12 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
 
     for run in dict.keys():
         print(run)
-        number_phases, amplitude, layers, resolution, searching_method, guessing_rule, method_guess, number_bobs, bound_displacements,efficient_time, ts_method = dict[run]["info"]
+        # number_phases, amplitude, layers, resolution, searching_method, guessing_rule, method_guess, number_bobs, bound_displacements,efficient_time, ts_method = dict[run]["info"]
+        number_phases, amplitude, layers, resolution, bound_displacements = 2, .4, 2, .1, 1
         exp = Experiment(number_phases=number_phases, amplitude= amplitude, layers=layers, resolution=resolution, bound_displacements=bound_displacements)
         exp.load_data(run)
         run_color = colors[run]
+        number_bobs=48
 
         if mode_log == "on":
             times = np.log10(exp.results[0])
@@ -150,8 +152,9 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
     if mode_log=="off":
         name = "lx_off"+name
     if save == True:
-        inf = dict[run]["info"]
-        layers, phases, resolution = inf[2], inf[0], inf[3]
+        # inf = dict[run]["info"]
+        # layers, phases, resolution = inf[2], inf[0], inf[3]
+        layers, phases, resolution = 2,2,.1
         if particular_name != "std":
             # plt.savefig(str(layers) + "L" + str(phases) + "PH"+str(resolution) + "R/figures/"+particular_name+".pdf")
             plt.savefig(str(layers) + "L" + str(phases) + "PH"+str(resolution) + "R/figures/"+particular_name+".png")
@@ -179,7 +182,7 @@ from misc import load_obj
 # dict = load_obj("all_favourite_methods_x1000", resolution=0.7)
 # dict = load_obj("exp-ep-greedy-Dolinar_x500", resolution=0.7)
 name = "all_methods_x48_ep100"
-dict = load_obj(name, resolution=0.1, layers=2)
+# dict = load_obj(name, resolution=0.1, layers=2)
 
 #
 # labels_all = {"run_1":r'$\epsilon = 0.01$'+"-greedy" , "run_2": r'$\epsilon = Max(0.01, e^{-t/\tau}$)', "run_3": "1-greedy", "run_4":"ucb ucb", "run_5": "exp-"+r'$\epsilon$' + " + TS", "run_6": "exp-gre + 0.1-TS", "run_7": "TS-TS", "run_8": "0.1(TS+TS)", "run_9": "ucb + ucb (banditalg)", "run_10": "ucb+ucb (anormal)", "run_11": "ucb + TS", "run_12": "exp-"+r'$\epsilon$' + " +ucb"}
@@ -199,10 +202,11 @@ interesting = ["run_5","run_6", "run_7"]
 # interesting = dict.keys()
 # #
 dict_plot = {}
-print(dict)
-for i in interesting:
-    dict_plot[i] = dict[i]
-print(dict_plot)
+# print(dict)
+# for i in interesting:
+#     dict_plot[i] = dict[i]
+# print(dict_plot)
+dict_plot = {"run_5":{},"run_6":{},"run_7":{}}
 for run in interesting:
     dict_plot[run]["label"] = labels[run]
 # dict_plot = {"run_8":{"label":"Max(0.01, "+r'$e^{-t/\tau}$'+")-greedy", "method":[],"info":[0]*11}, "run_12":{"label":"UCB-2","method":[],"info":[0]*11}, "run_9":{"label": "TS","method":[],"info":[0]*11}}

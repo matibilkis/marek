@@ -37,7 +37,9 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
 
     for run in dict.keys():
         print(run)
-        number_phases, amplitude, layers, resolution, searching_method, guessing_rule, method_guess, number_bobs, bound_displacements,efficient_time, ts_method = dict[run]["info"]
+        if run != "run_9":
+
+            number_phases, amplitude, layers, resolution, searching_method, guessing_rule, method_guess, number_bobs, bound_displacements,efficient_time, ts_method = dict[run]["info"]
         exp = Experiment(number_phases=number_phases, amplitude= amplitude, layers=layers, resolution=resolution, bound_displacements=bound_displacements)
         exp.load_data(run)
         run_color = colors[run]
@@ -170,7 +172,7 @@ color_2l = [46/255, 30/255, 251/255]
 colorucb1 = (19/255, 115/255,16/255)
 colorucb2 = (170/255,150/255,223/255)
 colorucb3 = (74/255, 90/255, 93/255)
-colors = {"run_1": color1, "run_2": color2, "run_3":color3, "run_4":"purple", "run_9":"orange", "run_5":colorucb1, "run_6": colorucb2, "run_7":colorucb3, "run_8":"green", "run_16":"yellow", "run_17":"brown"}
+colors = {"run_1": color1, "run_2": color2, "run_3":color3, "run_4":"purple", "run_5":colorucb1, "run_6": colorucb2, "run_7":colorucb3, "run_8":"yellow", "run_9":"purple"}
 #PALLETTEEEE https://htmlcolorcodes.com/
 
 
@@ -186,7 +188,7 @@ dict = load_obj(name, resolution=0.1, layers=2)
 #
 # labels = {"run_1":r'$\epsilon = 0.01$'+"-greedy" , "run_2": r'$\epsilon = 0.3$'+"-greedy", "run_3": r'$\epsilon = 1$'+"-greedy", "run_8":"Max(0.01, "+r'$e^{-t/\tau}$'+")-greedy", "run_12":"UCB-1", "run_13":"UCB-2", "run_14":"UCB-3", "run_15":"0.01-TS", "run_16": "0.1-TS", "run_9":"1-TS"} #r'$\epsilon = Max(0.01, e^{-t/\tau}$)', "run_3": "1-greedy"}
 
-labels = {"run_1":r'$\epsilon = 0.01$'+"-greedy" , "run_2": r'$\epsilon = 0.3$'+"-greedy", "run_3": r'$\epsilon = 1$'+"-greedy", "run_4":"Max(0.01, "+r'$e^{-t/\tau}$'+")-greedy", "run_5":"UCB-1","run_6":"UCB-2","run_7":"UCB-3","run_8":"1-TS"} #
+labels = {"run_1":r'$\epsilon = 0.01$'+"-greedy" , "run_2": r'$\epsilon = 0.3$'+"-greedy", "run_3": r'$\epsilon = 1$'+"-greedy", "run_4":"max(0.01, "+r'$e^{-t/\tau}$'+")-greedy", "run_5":"UCB-1","run_6":"UCB-2","run_7":"UCB-3","run_8":"1-TS", "run_9":"max(0.01, "+r'$e^{-t/\tau}$'+")-greedy + TS"} #
 
 
 
@@ -195,15 +197,15 @@ labels = {"run_1":r'$\epsilon = 0.01$'+"-greedy" , "run_2": r'$\epsilon = 0.3$'+
 # #     print(i, dict[i]["label"])
 # interesting = ["run_10","run_16", "run_2"]
 # interesting = ["run_1","run_2", "run_3", "run_4","run_5"]
-interesting = ["run_4","run_6", "run_8"]
+interesting = ["run_4","run_5", "run_8", "run_9"]
 # interesting = dict.keys()
 # #
 dict_plot = {}
-print(dict)
+dict["run_9"] = {}
 for i in interesting:
     dict_plot[i] = dict[i]
 print(dict_plot)
 for run in interesting:
     dict_plot[run]["label"] = labels[run]
 # dict_plot = {"run_8":{"label":"Max(0.01, "+r'$e^{-t/\tau}$'+")-greedy", "method":[],"info":[0]*11}, "run_12":{"label":"UCB-2","method":[],"info":[0]*11}, "run_9":{"label": "TS","method":[],"info":[0]*11}}
-ploting(dict_plot,mode_log="on",save=True,logyaxis=False,show=True, particular_name="enh-QL",mode="stds")
+ploting(dict_plot,mode_log="on",save=False,logyaxis=False,show=True, particular_name="enh-QLexp",mode="stds")

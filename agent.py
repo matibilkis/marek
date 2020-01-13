@@ -253,6 +253,7 @@ class Agent(basics.Basics):
             if self.experiments_did == self.min_actions:
                 self.ep = self.ep_saved
                 self.ep_method = self.ep_method_saved
+            # np.random.seed(datetime.now().microsecond()*int(np.random.random()))
             th = np.random.beta(self.alphas_search[self.layer][tuple(self.outcomes_observed[:self.layer])][tuple(self.actions_index_did[:(self.layer+1)])], self.betas_search[self.layer][tuple(self.outcomes_observed[:self.layer])][tuple(self.actions_index_did[:(self.layer+1)])]   )
             action_index = np.argmax(th)
             action, action_index = self.give_disp_value(action_index)
@@ -280,7 +281,7 @@ class Agent(basics.Basics):
     def greedy_Q_prob(self):
 
         if self.guessing_rule == "None":
-            if self.method_guess == "thompson-sampling":
+            if (self.method_guess == "thompson-sampling"):
                 p=0
                 if self.layers == 1:
                     l = np.where(self.q_table[0] == np.max(self.q_table[0]))[0]
@@ -302,24 +303,35 @@ class Agent(basics.Basics):
                     # l11 = np.where(self.q_table[1][1][l0,:] == np.max(self.q_table[1][1][l0,:]))[0]
                     # b11, l11 = self.give_disp_value(l11)
 
-                    al0 = self.alphas_search[0]
-                    bl0 = self.betas_search[0]
-                    means = np.array(al0)/np.array(al0+bl0)
-                    l0 = np.where(means == np.max(means))[0]
-                    b0, l0 = self.give_disp_value(l0)
+                    if self.method == "thompson-sampling":
 
-                    al10 = self.alphas_search[1][0][l0,:]
-                    bl10 = self.betas_search[1][0][l0,:]
-                    means10 = np.array(al10)/np.array(al10+bl10)
-                    l10 = np.where(means10 == np.max(means10))[0]
-                    b10, l10 = self.give_disp_value(l10)
+                        al0 = self.alphas_search[0]
+                        bl0 = self.betas_search[0]
+                        means = np.array(al0)/np.array(al0+bl0)
+                        l0 = np.where(means == np.max(means))[0]
+                        b0, l0 = self.give_disp_value(l0)
 
-                    al11 = self.alphas_search[1][1][l0,:]
-                    bl11 = self.betas_search[1][1][l0,:]
-                    means11 = np.array(al11)/np.array(al11+bl11)
-                    l11 = np.where(means11 == np.max(means11))[0]
-                    b11, l11 = self.give_disp_value(l11)
+                        al10 = self.alphas_search[1][0][l0,:]
+                        bl10 = self.betas_search[1][0][l0,:]
+                        means10 = np.array(al10)/np.array(al10+bl10)
+                        l10 = np.where(means10 == np.max(means10))[0]
+                        b10, l10 = self.give_disp_value(l10)
 
+                        al11 = self.alphas_search[1][1][l0,:]
+                        bl11 = self.betas_search[1][1][l0,:]
+                        means11 = np.array(al11)/np.array(al11+bl11)
+                        l11 = np.where(means11 == np.max(means11))[0]
+                        b11, l11 = self.give_disp_value(l11)
+
+                    else:
+                        l0 = np.where(self.q_table[0] == np.max(self.q_table[0]))[0]
+                        b0, l0 = self.give_disp_value(l0)
+
+                        l10 = np.where(self.q_table[1][0][l0,:] == np.max(self.q_table[1][0][l0,:]))[0]
+                        b10, l10 = self.give_disp_value(l10)
+
+                        l11 = np.where(self.q_table[1][1][l0,:] == np.max(self.q_table[1][1][l0,:]))[0]
+                        b11, l11 = self.give_disp_value(l11)
 
                     for n1,n2 in zip([0,0,1,1],[0,1,0,1]):
                         if n1==0:
@@ -328,11 +340,22 @@ class Agent(basics.Basics):
                             beta2, label2 = b11, l11
                         aa= self.alphas_guess[tuple([n1,n2,l0,label2])]
                         bbb = self.betas_guess[tuple([n1,n2,l0,label2])]
-                        ph = self.possible_phases[np.argmax((aa)/np.array(aa + bbb))]
+                        mph = (aa)/np.array(aa + bbb)
+                        phl = np.where(mph == np.max(mph))[0]
+                        try:
+
+                            if len(phl)>1:
+                                phl = random.choice(phl)
+                            else:
+                                phl = phl[0]
+                        except Exception:
+                            pass
+                        ph = self.possible_phases[phl]
                         p+=(1-self.pflip)*self.P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2) + (self.pflip*self.P(-ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(-ph*self.amplitude, beta2 ,1/np.sqrt(2), n2))
                     return p/self.number_phases
                 else:
                     # return self.probability_going_Q_greedy_ml()
+                    print("something went wrong, check the code out, i'm at line 347 of agent.py")
                     return .5
             else:
                 p=0

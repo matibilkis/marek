@@ -112,7 +112,58 @@ class MegaFrontEnd():
         ploting(plot_dict, mode="stds")
         return
 
+    def epgreTS(self, total_episodes=10**5,bob=48):
+        dict={}
+        method = "ep-greedy"
+        ep="TS+0.01exp"
+        fav_keys=[]
+        exper = training.Experiment(searching_method = "ep-greedy", layers=self.layers, min_ep = 0.01, time_tau = 200,  ep=0.01,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay",guessing_rule="None", efficient_time=self.efficient_time, method_guess = "thompson-sampling")
+        exper.train(bob)
 
+        with open(str(exper.layers)+"L"+str(exper.number_phases)+"PH"+str(exper.resolution)+"R/number_rune.txt", "r") as f:
+            c = f.readlines()[0]
+            f.close()
+
+        dict["run_"+str(c)] = {}
+        dict["run_"+str(c)]["label"] = str(ep) +"-greedy "
+        dict["run_"+str(c)]["info"] = [exper.number_phases, exper.amplitude, exper.layers, exper.resolution, exper.searching_method, exper.guessing_rule, exper.method_guess, exper.number_bobs, exper.bound_displacements, exper.efficient_time,exper.ts_method]
+        dict["run_"+str(c)]["info_ep"] = [exper.ep_method, exper.ep, exper.min_ep, exper.time_tau]
+        dict["run_"+str(c)]["info_ucb"] = [exper.ucb_method]
+        fav_keys.append("run_"+str(c))
+
+        plot_dict = filter_keys(dict,fav_keys)
+
+        save_obj(plot_dict, "ep-TS", exper.layers, exper.number_phases, exper.resolution, bob)
+        ploting(plot_dict, mode="stds")
+        return
+
+
+
+
+    def TS(self, total_episodes=10**5,bob=48):
+        dict={}
+        method = "thompson-sampling"
+        ep="TSsssss"
+        fav_keys=[]
+        exper = training.Experiment(searching_method = "thompson-sampling", layers=self.layers, min_ep = 0.01, time_tau = 200,  ep=0.01,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="TSSSS",guessing_rule="None", efficient_time=self.efficient_time, method_guess = "thompson-sampling")
+        exper.train(bob)
+
+        with open(str(exper.layers)+"L"+str(exper.number_phases)+"PH"+str(exper.resolution)+"R/number_rune.txt", "r") as f:
+            c = f.readlines()[0]
+            f.close()
+
+        dict["run_"+str(c)] = {}
+        dict["run_"+str(c)]["label"] = "TS "
+        dict["run_"+str(c)]["info"] = [exper.number_phases, exper.amplitude, exper.layers, exper.resolution, exper.searching_method, exper.guessing_rule, exper.method_guess, exper.number_bobs, exper.bound_displacements, exper.efficient_time,exper.ts_method]
+        dict["run_"+str(c)]["info_ep"] = [exper.ep_method, exper.ep, exper.min_ep, exper.time_tau]
+        dict["run_"+str(c)]["info_ucb"] = [exper.ucb_method]
+        fav_keys.append("run_"+str(c))
+
+        plot_dict = filter_keys(dict,fav_keys)
+
+        save_obj(plot_dict, "TSSSS", exper.layers, exper.number_phases, exper.resolution, bob)
+        ploting(plot_dict, mode="stds")
+        return
     def RunAll(self, total_episodes=10**3, bob=1):
         dict={}
         method = "ep-greedy"
@@ -136,9 +187,9 @@ class MegaFrontEnd():
         plot_dict = filter_keys(dict,fav_keys)
 
         save_obj(plot_dict, "ep-greedy-Dolinar", exper.layers, exper.number_phases, exper.resolution, bob)
-        ploting(plot_dict, mode="minimax")
-        if bob>1:
-            ploting(plot_dict, mode="stds")
+        # ploting(plot_dict, mode="minimax")
+        # if bob>1:
+        #     ploting(plot_dict, mode="stds")
 
         fav_keys=[]
         for tau in [200]:
@@ -161,9 +212,9 @@ class MegaFrontEnd():
 
         plot_dict = filter_keys(dict,fav_keys)
         save_obj(plot_dict, "exp-ep-greedy-Dolinar", exper.layers, exper.number_phases, exper.resolution, bob)
-        ploting(plot_dict, mode="minimax")
-        if bob>1:
-            ploting(plot_dict, mode="stds")
+        # ploting(plot_dict, mode="minimax")
+        # if bob>1:
+        #     ploting(plot_dict, mode="stds")
 
         fav_keys=[]
         method = "ucb"
@@ -184,17 +235,15 @@ class MegaFrontEnd():
 
         plot_dict = filter_keys(dict,fav_keys)
         save_obj(plot_dict, "ucbs-Dolinar", exper.layers, exper.number_phases, exper.resolution, bob, total_episodes)
-        ploting(plot_dict, mode="minimax")
-        if bob>1:
-            ploting(plot_dict, mode="stds")
+        # ploting(plot_dict, mode="minimax")
+        # if bob>1:
+        #     ploting(plot_dict, mode="stds")
 
         fav_keys=[]
         method = "thompson-sampling"
         # for soft in [0.75, 1.25,1]:
         for soft in [1]:
-
             for mode_ts in ["None"]: #This is if you want to relate the q-table with the TS-update, but it doesnt' give any enhancement (for what i see).
-
                 exper = training.Experiment(searching_method = method, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes, guessing_rule=self.guessing_rule, soft_ts=soft, efficient_time=self.efficient_time, ts_method=mode_ts)
                 exper.train(bob)
 
@@ -211,9 +260,29 @@ class MegaFrontEnd():
 
         plot_dict = filter_keys(dict,fav_keys)
         save_obj(plot_dict, "TS", exper.layers, exper.number_phases, exper.resolution, bob)
-        ploting(plot_dict, mode="minimax")
-        if bob>1:
-            ploting(plot_dict, mode="stds")
+        # ploting(plot_dict, mode="minimax")
+        # if bob>1:
+        #     ploting(plot_dict, mode="stds")
+        #
+        method = "ep-greedy"
+        ep="TS+0.01exp"
+        fav_keys=[]
+        exper = training.Experiment(searching_method = "ep-greedy", layers=self.layers, min_ep = 0.01, time_tau = 200,  ep=0.01,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="exp-decay",guessing_rule="None", efficient_time=self.efficient_time, method_guess = "thompson-sampling")
+        exper.train(bob)
+
+        with open(str(exper.layers)+"L"+str(exper.number_phases)+"PH"+str(exper.resolution)+"R/number_rune.txt", "r") as f:
+            c = f.readlines()[0]
+            f.close()
+
+        dict["run_"+str(c)] = {}
+        dict["run_"+str(c)]["label"] = str(ep) +"-greedy "
+        dict["run_"+str(c)]["info"] = [exper.number_phases, exper.amplitude, exper.layers, exper.resolution, exper.searching_method, exper.guessing_rule, exper.method_guess, exper.number_bobs, exper.bound_displacements, exper.efficient_time,exper.ts_method]
+        dict["run_"+str(c)]["info_ep"] = [exper.ep_method, exper.ep, exper.min_ep, exper.time_tau]
+        dict["run_"+str(c)]["info_ucb"] = [exper.ucb_method]
+        fav_keys.append("run_"+str(c))
+
+        plot_dict = filter_keys(dict,fav_keys)
+        save_obj(plot_dict, "ep-TS", exper.layers, exper.number_phases, exper.resolution, bob)
 
 
         save_obj(dict, "all_methods", exper.layers, exper.number_phases, exper.resolution, bob)
