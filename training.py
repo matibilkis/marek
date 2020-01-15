@@ -134,7 +134,6 @@ class Experiment():
         del bb
 
         self.opt_kenn = np.genfromtxt("bounds_optimals_and_limits/kennedy_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
-        self.opt_2l = np.genfromtxt("bounds_optimals_and_limits/2layers_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
         # self.opt_kenn_resolution = self.compute_optimal_kenn()
         self.optimal_value = 0
         # if (self.layers == 1)&(self.resolution==0.1)&(self.bound_displacements==1)&(np.round(self.amplitude,2)==self.amplitude):
@@ -159,7 +158,9 @@ class Experiment():
 
             self.cte_LR = reg_coeff
         else:
-            self.optimal_value = "Compute it with DP!"
+            self.opt_2l = np.genfromtxt("bounds_optimals_and_limits/2layers_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
+            self.optimal_value = self.opt_2l
+        self.opt_2l = self.optimal_value
         self.algorithm = algorithm
         self.strange_factor_ucbeff = strange_factor_ucbeff
         self.prob_eff = prob_eff

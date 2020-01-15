@@ -26,7 +26,7 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
 
     #details = [energy, layers, resolution]
     #dict is a dictornary with the labels you want to assign
-    plt.figure(figsize=(30,22), dpi=100)
+    plt.figure(figsize=(30,22), dpi=150)
     ax1 = plt.subplot2grid((2,1), (0,0))
     ax2 = plt.subplot2grid((2,1), (1,0))
     name = str(dict.keys())
@@ -63,7 +63,7 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
                 ax2.plot(times,exp.optimal_value*np.ones(len(times)), '--',linewidth=9, alpha=0.6, color=color_2l)
 
             axins = zoomed_inset_axes(ax2, zoom=3,loc="lower right")
-            loc1=-int(len(exp.results[0])*0.5)
+            loc1=-int(len(exp.results[0])*0.7)
             loc2=-1
             once=False
 
@@ -85,10 +85,10 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
                     axins.plot(np.log10(exp.results[0][loc1:loc2]), exp.results[2][loc1:loc2], '-', linewidth=9,alpha=.8, color=colors[run], label=dict[run]["label"])
                     axins.fill_between(np.log10(exp.results[0][loc1:loc2]), (exp.results[2][loc1:loc2] - exp.stds[1][loc1:loc2]/2),(exp.results[2][loc1:loc2] + exp.stds[1][loc1:loc2]/2),alpha=.2, facecolor=colors[run])
 
-                    axins.plot(np.log10([exp.results[0][loc1], exp.results[0][loc2-1]]), [1-exp.opt_2l]*2, '-.', alpha=.8, linewidth=9,color=color_2l,
+                    axins.plot(np.log10([exp.results[0][loc1], exp.results[0][loc2-1]]), [exp.opt_2l]*2, '-.', alpha=.8, linewidth=9,color=color_2l,
                     label="Optimal 2L")
-
-                    axinticks.append(exp.results[2][loc1])
+                    if dict[run]["label"] != "UCB-2":
+                        axinticks.append(exp.results[2][loc2])
 
                     ax1.fill_between(times, (exp.results[1] - exp.stds[0]/2)/exp.results[0],
                     (exp.results[1] + exp.stds[0]/2)/exp.results[0], alpha=0.4, color=run_color)
@@ -99,7 +99,7 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
                     axins.plot(np.log10(exp.results[0][loc1:loc2]), np.log10(exp.results[2][loc1:loc2]), '-', linewidth=9,alpha=.8, color=colors[run], label=dict[run]["label"])
                     axins.fill_between(np.log10(exp.results[0][loc1:loc2]), np.log10(exp.results[2][loc1:loc2] - exp.stds[1][loc1:loc2]/2),np.log10(exp.results[2][loc1:loc2] + exp.stds[1][loc1:loc2]/2),alpha=.2, facecolor=colors[run])
 
-                    axins.plot(np.log10([exp.results[0][loc1], exp.results[0][loc2-1]]), np.log10([1-exp.opt_2l]*2), '-.', alpha=.8, linewidth=9,color=color_2l,
+                    axins.plot(np.log10([exp.results[0][loc1], exp.results[0][loc2-1]]), np.log10([exp.opt_2l]*2), '-.', alpha=.8, linewidth=9,color=color_2l,
                     label="Optimal 2L")
 
                     axinticks.append(np.log10(exp.results[2][loc1]))
@@ -114,8 +114,8 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
     ax1.legend()
     mark_inset(ax2, axins, loc1=1, loc2=2, fc="green", ec="0.3", alpha=0.5)
     if logyaxis == True:
-        axinticks.append(np.log10(1-exp.opt_2l))
-        yticks = np.arange(np.round(min(exp.results[2]),1),1-exp.opt_2l,.1)
+        axinticks.append(np.log10(exp.opt_2l))
+        yticks = np.arange(np.round(min(exp.results[2]),2),np.round(exp.opt_2l,2),.1)
         ax1.set_yticks(yticks)
         ax2.set_yticks(np.log10(yticks))
         ax2.set_yticklabels([str(np.round(i,1)) for i in yticks])
@@ -123,22 +123,23 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
         axins.set_yticks(axinticks)
         axins.set_yticklabels([str(np.round(i,3)) for i in axinticks])
 
-        plt.setp(axins.get_yticklabels(), size=27)
+        plt.setp(axins.get_yticklabels(), size=22)
 
     else:
-        axinticks.append(1-exp.opt_2l)
-        yticks = np.arange(np.round(min(exp.results[2]),1),1-exp.opt_2l,.1)
+        axinticks.append(exp.opt_2l)
+        yticks = np.arange(np.round(min(exp.results[2]),3),1-exp.opt_2l,.1)
         ax1.set_yticks(yticks)
         ax2.set_yticks(yticks)
 
         axins.set_yticks(axinticks)
-        axins.set_yticklabels([str(np.round(i,2)) for i in axinticks])
-        plt.setp(axins.get_yticklabels(), size=27)
+        axins.set_yticklabels([str(np.round(i,3)) for i in axinticks])
+        plt.setp(axins.get_yticklabels(), size=22)
 
 
     plt.setp(axins.get_xticklabels(), visible=False)
     plt.setp(ax1.get_xticklabels(), visible=False)
-    ax2.set_xticklabels(['',r'$10^{0}$',r'$10^{1}$',r'$10^{2}$',r'$10^{3}$',r'$10^{4}$',r'$10^{5}$',''])
+    ax2.set_xticks([0,1,2,3,4,5,np.log10(5*10**5)])
+    ax2.set_xticklabels([r'$10^{0}$',r'$10^{1}$',r'$10^{2}$',r'$10^{3}$',r'$10^{4}$',r'$10^{5}$',r'$5 \; 10^{5}$'])
     plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=0.1)
 
     ax2.tick_params(axis='x', which='both',top='off')
@@ -152,13 +153,11 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
     if mode_log=="off":
         name = "lx_off"+name
     if save == True:
-        # inf = dict[run]["info"]
-        # layers, phases, resolution = inf[2], inf[0], inf[3]
         layers, phases, resolution = 2,2,.1
         if particular_name != "std":
             # plt.savefig(str(layers) + "L" + str(phases) + "PH"+str(resolution) + "R/figures/"+particular_name+".pdf")
             plt.savefig(str(layers) + "L" + str(phases) + "PH"+str(resolution) + "R/figures/"+particular_name+".png")
-
+            # plt.savefig(str(layers) + "L" + str(phases) + "PH"+str(resolution) + "R/figures/QL.pdf",dpi=10)
         else:
             plt.savefig(str(layers) + "L" + str(phases) + "PH"+str(resolution) + "R/figures/"+name+"-"+str(mode)+".pdf")
     if show == True:
@@ -181,7 +180,7 @@ colors = {"run_1": color1, "run_2": color2, "run_3":color3, "run_4":"purple", "r
 from misc import load_obj
 # dict = load_obj("all_favourite_methods_x1000", resolution=0.7)
 # dict = load_obj("exp-ep-greedy-Dolinar_x500", resolution=0.7)
-name = "all_methods_x48_ep100"
+name = "all_methods_x24_ep100"
 # dict = load_obj(name, resolution=0.1, layers=2)
 
 #
@@ -210,4 +209,4 @@ dict_plot = {"run_5":{},"run_6":{},"run_7":{}}
 for run in interesting:
     dict_plot[run]["label"] = labels[run]
 # dict_plot = {"run_8":{"label":"Max(0.01, "+r'$e^{-t/\tau}$'+")-greedy", "method":[],"info":[0]*11}, "run_12":{"label":"UCB-2","method":[],"info":[0]*11}, "run_9":{"label": "TS","method":[],"info":[0]*11}}
-ploting(dict_plot,mode_log="on",save=True,logyaxis=False,show=True, particular_name="UCB-QL",mode="stds")
+ploting(dict_plot,mode_log="on",save=True,logyaxis=False,show=False, particular_name="UCB-QL",mode="stds")
