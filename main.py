@@ -381,4 +381,5 @@ class MegaFrontEnd():
 # mega.single_run()
 if __name__ == "__main__":
     mega = MegaFrontEnd(layers=2, guessing_rule="None")
-    mega.run_epgreedy1_tables(total_episodes=10**7)
+    # mega.run_epgreedy1_tables(total_episodes=10**7)
+    mega.RunAll(total_episodes=5*10**5, bob=4)

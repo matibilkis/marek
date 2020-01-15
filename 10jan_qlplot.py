@@ -60,7 +60,7 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
             else:
                 ax2.plot(times,exp.optimal_value*np.ones(len(times)), '--',linewidth=9, alpha=0.6, color=color_2l)
 
-            axins = zoomed_inset_axes(ax2, zoom=3,loc="lower right")
+            axins = zoomed_inset_axes(ax2, zoom=2.7,loc="lower right")
             loc1=-int(len(exp.results[0])*0.5)
             loc2=-1
             once=False
@@ -161,19 +161,16 @@ def ploting(dict, mode="minimax", mode_log="on", save=True, show=False, particul
     if show == True:
         plt.show()
 
-# color1 = (69/255, 209/255, 154/255)
 color1="purple"
 color2 = (225/255, 15/255, 245/255)
 color3 = (150/255, 22/255, 9/255)
 color_2l = [46/255, 30/255, 251/255]
+colorexp = (13/255,95/255,14/255)
 
 colorucb1 = (19/255, 115/255,16/255)
 colorucb2 = (170/255,150/255,223/255)
 colorucb3 = (74/255, 90/255, 93/255)
-colors = {"run_1": color1, "run_2": color2, "run_3":color3, "run_4":"purple", "run_9":"orange", "run_5":colorucb1, "run_6": colorucb2, "run_7":colorucb3, "run_8":"green", "run_16":"yellow", "run_17":"brown"}
-#PALLETTEEEE https://htmlcolorcodes.com/
-
-
+colors = {"run_1": "orange", "run_2": color2, "run_3":"brown", "run_4":colorexp, "run_5":colorucb1, "run_6": colorucb2, "run_7":colorucb3, "run_8":"yellow", "run_9":"purple"}
 
 from misc import load_obj
 # dict = load_obj("all_favourite_methods_x1000", resolution=0.7)
