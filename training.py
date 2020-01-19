@@ -133,17 +133,26 @@ class Experiment():
         self.homodyne_limit = bb.homodyne()
         del bb
 
-        self.opt_kenn = np.genfromtxt("bounds_optimals_and_limits/kennedy_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
+        try:
+
+            self.opt_kenn = np.genfromtxt("bounds_optimals_and_limits/kennedy_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
+        except Exception:
+            self.opt_kenn=.5
         # self.opt_kenn_resolution = self.compute_optimal_kenn()
         self.optimal_value = 0
         # if (self.layers == 1)&(self.resolution==0.1)&(self.bound_displacements==1)&(np.round(self.amplitude,2)==self.amplitude):
         #     self.optimal_value = np.load("bounds_optimals_and_limits/1layers_probs_resolution0.1/"+str(np.round(self.amplitude,2))+".npy")
         #     self.cte_LR = 1505.5002588209475
         if self.layers == 2:
-            self.opt_2l_resolution01 = np.load("bounds_optimals_and_limits/2layers_probs_resolution0.1/"+str(np.round(self.amplitude,2))+".npy")
-            self.optimal_value = self.opt_2l_resolution01
-            self.cte_LR = 1505.5002588209475 #(the one for bandits...)
+            try:
 
+                self.opt_2l_resolution01 = np.load("bounds_optimals_and_limits/2layers_probs_resolution0.1/"+str(np.round(self.amplitude,2))+".npy")
+                self.optimal_value = self.opt_2l_resolution01
+                self.cte_LR = 1505.5002588209475 #(the one for bandits...)
+            except Exception:
+                self.opt_2l_resolution01 = 0.05
+                self.optimal_value = 0.05
+                self.cte_LR = 1000
         elif self.layers==1:
             #for the bandit scenarii...
             b = basics.Basics(amplitude=self.amplitude, layers=1,bound_displacements=self.bound_displacements, resolution=self.resolution)
@@ -158,8 +167,13 @@ class Experiment():
 
             self.cte_LR = reg_coeff
         else:
-            self.opt_2l = np.genfromtxt("bounds_optimals_and_limits/2layers_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
-            self.optimal_value = self.opt_2l
+            try:
+
+                self.opt_2l = np.genfromtxt("bounds_optimals_and_limits/2layers_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
+                self.optimal_value = self.opt_2l
+            except Exception:
+                self.opt_2l=0.05
+                self.optimal_value=0.01
         self.opt_2l = self.optimal_value
         self.algorithm = algorithm
         self.strange_factor_ucbeff = strange_factor_ucbeff

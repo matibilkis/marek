@@ -17,6 +17,15 @@ class MegaFrontEnd():
         self.efficient_time = efficient_time
         # self.methods_to_run = ["ep-greedy", "exp-ep-greedy", "ucb", "thompson-sampling"]
 
+    def energies(self,total_episodes,bobs):
+        for amp in np.arange(.1,1.6,.1):
+            for method in ["ep-greedy", "ucb", "thompson-sampling"]:
+
+                exper = training.Experiment(amplitude=amp, searching_method = method, layers=self.layers, ucb_method="ucb1" , resolution=self.resolution, bound_displacements=self.bound_displacements,  states_wasted=total_episodes, guessing_rule="None", efficient_time=True)
+                exper.train(bobs)
+                del exper
+        return
+
     def ucb4(self, total_episodes=10**2, bob=1):
         dict = {}
         method="ucb"
