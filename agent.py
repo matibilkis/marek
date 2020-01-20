@@ -51,9 +51,9 @@ class Agent(basics.Basics):
 
 
 
-    def __init__(self, layers=2, resolution=0.1, number_phases=2, bound_displacements=1, guessing_rule="None", searching_method="ep-greedy", ep_method="exp-decay", ucb_method="ucb1", ep=0.01, min_ep=0.01, soft_ts = 1, learning_rate=0, efficiency=1, method_guess="undefined", time_tau=1000, pflip=0, algorithm="standard", strange_factor_ucbeff=1, prob_eff=0.01, ts_method="std"):
+    def __init__(self, amplitude=0.4, layers=2, resolution=0.1, number_phases=2, bound_displacements=1, guessing_rule="None", searching_method="ep-greedy", ep_method="exp-decay", ucb_method="ucb1", ep=0.01, min_ep=0.01, soft_ts = 1, learning_rate=0, efficiency=1, method_guess="undefined", time_tau=1000, pflip=0, algorithm="standard", strange_factor_ucbeff=1, prob_eff=0.01, ts_method="std"):
 
-        super().__init__(layers=layers, resolution=resolution, number_phases=number_phases , bound_displacements=bound_displacements, efficiency=efficiency,pflip=pflip)
+        super().__init__(amplitude=amplitude,layers=layers, resolution=resolution, number_phases=number_phases , bound_displacements=bound_displacements, efficiency=efficiency,pflip=pflip)
         self.method = searching_method
         self.experiments_did=0
         self.guessing_rule = guessing_rule
@@ -279,7 +279,6 @@ class Agent(basics.Basics):
 
 
     def greedy_Q_prob(self):
-
         if self.guessing_rule == "None":
             if (self.method_guess == "thompson-sampling"):
                 p=0

@@ -255,7 +255,7 @@ class Experiment():
             np.random.seed(int(bob_id)*datetime.now().microsecond)
             random.seed(int(bob_id)*datetime.now().microsecond)
 
-        bob = agent.Agent(layers = self.layers, resolution=self.resolution, number_phases =self.number_phases, bound_displacements = self.bound_displacements, guessing_rule = self.guessing_rule, searching_method=self.searching_method, ep=self.ep, ep_method=self.ep_method, ucb_method=self.ucb_method, soft_ts = self.soft_ts, efficiency=self.efficiency,method_guess=self.method_guess, min_ep=self.min_ep, time_tau = self.time_tau, pflip=self.pflip, algorithm=self.algorithm, strange_factor_ucbeff=self.strange_factor_ucbeff, prob_eff=self.prob_eff, ts_method=self.ts_method)
+        bob = agent.Agent(amplitude = self.amplitude,layers = self.layers, resolution=self.resolution, number_phases =self.number_phases, bound_displacements = self.bound_displacements, guessing_rule = self.guessing_rule, searching_method=self.searching_method, ep=self.ep, ep_method=self.ep_method, ucb_method=self.ucb_method, soft_ts = self.soft_ts, efficiency=self.efficiency,method_guess=self.method_guess, min_ep=self.min_ep, time_tau = self.time_tau, pflip=self.pflip, algorithm=self.algorithm, strange_factor_ucbeff=self.strange_factor_ucbeff, prob_eff=self.prob_eff, ts_method=self.ts_method)
 
         bob.ep=self.ep
         bob.probability_success_greedy_q=[]
