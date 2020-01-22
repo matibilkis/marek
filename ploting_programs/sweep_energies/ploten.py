@@ -22,7 +22,7 @@ plt.figure(figsize=(50,30), dpi=80)
 ax1 = plt.subplot2grid((1,2), (0,0))
 ax2 = plt.subplot2grid((1,2), (0,1))
 colors={"0":"red","1":"blue","2":"green"}
-labels={"2":"UCB-1", "1":"max(0.01,"+r'$e^{-\frac{t}{\tau}}$'+")-greedy", "0":"TS"}
+labels={"1":"UCB-1", "2":"max(0.01,"+r'$e^{-\frac{t}{\tau}}$'+")-greedy", "0":"TS"}
 
 for a in [ax1,ax2]:
     a.set_xticks(np.arange(0,1.6,.1))
@@ -39,38 +39,38 @@ for r in range(1,46):
     # exp = Experiment(number_phases=2, amplitude= .4, layers=2, resolution=.1, bound_displacements=1)
     # exp.load_data("run_"+str(r))
     lc = np.load("2L2PH0.1R/run_"+str(r)+"/learning_curves.npy", allow_pickle=True)
-    cumrefin = lc[1][-1]/lc[0][-1]
-    prosucgre = lc[2][-1]
+    cumrefin = lc[1][40]/lc[0][40] #at 5 10**5
+    prosucgre = lc[2][40]
     if r<4:
-        ax1.scatter(eff, cumrefin, s=size, color=colors[str(r%3)],alpha=0.7, label=labels[str(r%3)])
-        ax2.scatter(eff, prosucgre, s=size, color=colors[str(r%3)],alpha=0.7, label=labels[str(r%3)])
+        ax1.scatter(eff**2, cumrefin, s=size, color=colors[str(r%3)],alpha=0.7, label=labels[str(r%3)])
+        ax2.scatter(eff**2, prosucgre, s=size, color=colors[str(r%3)],alpha=0.7, label=labels[str(r%3)])
 
     else:
-        ax1.scatter(eff, cumrefin, s=size, alpha=0.7,color=colors[str(r%3)])
-        ax2.scatter(eff, prosucgre, s=size, alpha=0.7,color=colors[str(r%3)])
+        ax1.scatter(eff**2, cumrefin, s=size, alpha=0.7,color=colors[str(r%3)])
+        ax2.scatter(eff**2, prosucgre, s=size, alpha=0.7,color=colors[str(r%3)])
 
     if (r%3==0):
         eff+=0.1
 os.chdir("dynammic_programming")
 bets = pd.read_csv("solobetas.csv")
 bets = bets.to_numpy()
-colors = {"2":"black", "3": "red", "4": "green", "5":"purple", "6": "red", "7":"blue", "8":"pink", "9":"yellow"}
+colors = {"2":"black", "3": "black", "4": "green", "5":"purple", "6": "red", "7":"blue", "8":"pink", "9":"yellow"}
 layer=3
-ax1.plot(bets[:,0], bets[:,layer], color=colors[str(layer)],linewidth=6, alpha=.85,label=r'$p^{(L = 2)}_*$')
-ax2.plot(bets[:,0], bets[:,layer], color=colors[str(layer)],linewidth=6, alpha=.85,label=r'$p^{(L = 2)}_*$')
+ax1.plot(np.square(bets[:,0]), bets[:,layer], color=colors[str(layer)],linewidth=10, alpha=.85,label=r'$p^{(L = 2)}_*$')
+ax2.plot(np.square(bets[:,0]), bets[:,layer], color=colors[str(layer)],linewidth=10, alpha=.85,label=r'$p^{(L = 2)}_*$')
 os.chdir("..")
 
 ax1.legend(loc="lower right", prop={"size":70})
 ax2.legend(loc="lower right", prop={"size":70})
-ax1.set_xlabel(r'$\alpha$', size=100, labelpad=15)
-ax2.set_xlabel(r'$\alpha$', size=100, labelpad=15)
+ax1.set_xlabel(r'$|\alpha|^{2}$', size=100, labelpad=15)
+ax2.set_xlabel(r'$|\alpha|^{2}$', size=100, labelpad=15)
 ax2.yaxis.set_label_position("right")
 st=[]
-for k in np.arange(0,1.6,.25):
+for k in np.arange(0,2.5,.5):
     st.append(str(k))
 
 for ax in [ax1,ax2]:
-    ax.set_xticks(np.arange(0,1.6,.25))
+    ax.set_xticks(np.arange(0,2.5,.5))
     plt.setp(ax.get_xticklabels(), size=70)
 
 ax1.set_ylabel(r'\textbf{R}$_t$', size=170)

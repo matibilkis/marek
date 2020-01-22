@@ -7,4 +7,4 @@ from main import MegaFrontEnd
 import numpy as np
 
 mega = MegaFrontEnd(layers=2, guessing_rule="None")
-mega.energies(total_episodes=5*10**5, bobs=24)
+mega.energies(total_episodes=10**6, bobs=12)
