@@ -26,6 +26,8 @@ class MegaFrontEnd():
                 del exper
         return
 
+
+
     def ucb4(self, total_episodes=10**2, bob=1):
         dict = {}
         method="ucb"
@@ -50,9 +52,19 @@ class MegaFrontEnd():
         ploting(plot_dict, mode="stds")
         return
 
-    def run_epgreedy1_tables(self, total_episodes=10**3):
+    def run_epgreedy1_tables(self, total_episodes=10**3, bob=1):
         exper = training.Experiment(searching_method = "ep-greedy", ep=1, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="normal", min_ep=0.01, guessing_rule=self.guessing_rule, efficient_time=True, save_tables=True)
-        exper.train(1)
+        exper.train(bob)
+        return
+
+    def run_03gre_tables(self, total_episodes=10**3, bob=1):
+        exper = training.Experiment(searching_method = "ep-greedy", ep=0.3, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="normal", min_ep=0.01, guessing_rule=self.guessing_rule, efficient_time=True, save_tables=True)
+        exper.train(bob)
+        return
+
+    def ucb1_tables(self, total_episodes=5*10**5, bob=1):
+        exper = training.Experiment(searching_method = "ucb",ucb_method="ucb1", ep=1, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="normal", min_ep=0.01, guessing_rule=self.guessing_rule, efficient_time=True, save_tables=True)
+        exper.train(bob)
         return
 
     def run_darkcounts(self,total_episodes=10**3,bobs=48):
@@ -390,5 +402,7 @@ class MegaFrontEnd():
 # mega.single_run()
 if __name__ == "__main__":
     mega = MegaFrontEnd(layers=2, guessing_rule="None")
-    # mega.run_epgreedy1_tables(total_episodes=10**7)
-    mega.RunAll(total_episodes=5*10**5, bob=4)
+    mega.run_03gre_tables(total_episodes=5*10**5, bob=100)
+    # mega.ucb1_tables(total_episodes=5*10**5, bob=12)
+
+    # mega.RunAll(total_episodes=5*10**5, bob=4)
