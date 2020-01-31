@@ -21,7 +21,7 @@ class MegaFrontEnd():
                 del exper
         return
 
-    def ep_greedy_tables(self, total_episodes=10**3, ep, bob=1):
+    def ep_greedy_tables(self, total_episodes=10**3, ep=0.3, bob=1):
         exper = training.Experiment(searching_method = "ep-greedy", ep=ep, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="normal", min_ep=0.01, guessing_rule=self.guessing_rule, efficient_time=True, save_tables=True)
         exper.train(bob)
         return
