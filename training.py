@@ -168,7 +168,6 @@ class Experiment():
             self.cte_LR = reg_coeff
         else:
             try:
-
                 self.opt_2l = np.genfromtxt("bounds_optimals_and_limits/2layers_probs/"+str(np.round(self.amplitude,2))+".csv", delimiter=",")
                 self.optimal_value = self.opt_2l
             except Exception:
@@ -524,6 +523,11 @@ class Experiment():
             print("successfully loaded the tables :)")
             # except Exception:
             #     print("Error: make sure save_tables=True when you run the program (it's an option of training.Experiment())")
+
+            self.avg_q_table_evolution = np.load(str(run)+"/tables/q_disp_avg_evolution.npy", allow_pickle=True)
+            self.avg_n_table_evolution = np.load(str(run)+"/tables/n_disp_avg_evolution.npy", allow_pickle=True)
+            self.avg_q_table_guess_evolution = np.load(str(run)+"/tables/q_guess_avg_evolution.npy", allow_pickle=True)
+            self.avg_n_table_guess_evolution = np.load(str(run)+"/tables/n_guess_avg_evolution.npy", allow_pickle=True)
         os.chdir("..")
         return
 

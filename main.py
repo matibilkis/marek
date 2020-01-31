@@ -159,7 +159,9 @@ if __name__ == "__main__":
     mega = MegaFrontEnd(layers=2, guessing_rule="None")
 
     # mega.RunAll(total_episodes=5*10**5, bob=24)
-    mega.ucb_tables(total_episodes=10**5, bob=4)
+    # mega.ucb_tables(total_episodes=10**5, bob=4)
+    mega.ep_greedy_tables(total_episodes=5*10**5,ep=0.3, bob=12)
+
     # mega.sweep_energies(total_episodes=5*10**5, bob=24)
     # mega.run_phaseflip()
     # mega.run_darkcounts()

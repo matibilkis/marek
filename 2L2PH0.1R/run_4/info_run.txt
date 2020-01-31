@@ -1,0 +1,25 @@
+ amplitude:0.4
+layers: 2
+ number_phases: 2
+ search_method: ep-greedy
+ resolution: 0.1
+ bound_displacements: 1
+ guessing_rule: None
+ method_guess : undefineddark counts rate (efficiency): 1
+ Phase flip probability: 0 
+ ************  
+ ************ 
+ epsilon: 0.3
+ epsilon_greedy method: normal
+ min_ep : 0.01
+ time_tau (exp decay ep-greedy): 1000
+ 
+  **** UCB DETAILS *** 
+ 
+  ucb_method: ucb1**** thomspon sampling details: 
+ soft_ts: 1
+ 
+ **** TS DETAILS 
+ ts_method (if update towards q instead of reward): std
+soft_ts: 1
+ **** number_bobs: 12
