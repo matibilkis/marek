@@ -21,7 +21,7 @@ class MegaFrontEnd():
                 del exper
         return
 
-    def ep_greedy_tables(self, total_episodes=10**3, ep, bob=1):
+    def ep_greedy_tables(self, total_episodes=10**3, ep=1, bob=1):
         exper = training.Experiment(searching_method = "ep-greedy", ep=ep, layers=self.layers,resolution=self.resolution, bound_displacements=self.bound_displacements, states_wasted=total_episodes,ep_method="normal", min_ep=0.01, guessing_rule=self.guessing_rule, efficient_time=True, save_tables=True)
         exper.train(bob)
         return
@@ -158,8 +158,8 @@ class MegaFrontEnd():
 if __name__ == "__main__":
     mega = MegaFrontEnd(layers=2, guessing_rule="None")
 
-    mega.RunAll(total_episodes=5*10**5, bob=24)
-    mega.ucb_tables(total_episodes=5*10**5, bob=24)
-    mega.sweep_energies(total_episodes=5*10**5, bob=24)
-    mega.run_phaseflip()
-    mega.run_darkcounts()
+    # mega.RunAll(total_episodes=5*10**5, bob=24)
+    mega.ucb_tables(total_episodes=10**5, bob=4)
+    # mega.sweep_energies(total_episodes=5*10**5, bob=24)
+    # mega.run_phaseflip()
+    # mega.run_darkcounts()
