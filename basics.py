@@ -167,7 +167,7 @@ class Basics():
               '
               '
          |sin(\theta)*a>
-              '
+              
 
         params[1] should have L numbers, which are the thetas, between 0 and Pi/2.
 
