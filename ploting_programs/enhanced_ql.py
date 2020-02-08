@@ -212,3 +212,11 @@ for run in interesting:
     dict_plot[run]["label"] = labels[run]
 # dict_plot = {"run_8":{"label":"Max(0.01, "+r'$e^{-t/\tau}$'+")-greedy", "method":[],"info":[0]*11}, "run_12":{"label":"UCB-2","method":[],"info":[0]*11}, "run_9":{"label": "TS","method":[],"info":[0]*11}}
 ploting(dict_plot,mode_log="on",save=True,logyaxis=False,show=False, particular_name="enh-QLexp",mode="stds")
+
+
+
+
+
+
+
+#
