@@ -6,7 +6,7 @@ class Agent(basics.Basics):
     def __init__(self, amplitude=0.4, layers=2,
                 n_actions=10, number_phases=2,
                 bound_displacements=1, searching_method="ep-greedy",
-                ep_method="ep-greedy", ep=0.01, min_ep=0.01, tau_ep=500, learning_rate=0):
+                ep_method="ep-greedy", ep=0.01, min_ep=0.01, tau_ep=500, learning_rate=0, channel={}):
 
         super().__init__(amplitude=amplitude,layers=layers,
                         n_actions=n_actions, number_phases=number_phases ,
@@ -21,6 +21,19 @@ class Agent(basics.Basics):
         self.tau_ep=tau_ep
 
         self.learning_rate = learning_rate
+        if channel != {}:
+            self.channel = channel
+            assert self.channel["class"] == "compound_lossy"
+            prob_channel, epsilon = self.channel["params"]
+
+            def P(self,a,b,et, outcome):
+                p0 = 0
+                for p_chann, par in zip([prob_channel, 1-prob_channel], [epsilon, 1]):
+                    p0 += np.exp(-abs((et*a*par)+b)**2)*p_chann
+                if n ==0:
+                    return p0
+                else:
+                    return 1-p0
 
         self.define_actions()
         self.create_tables()

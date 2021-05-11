@@ -17,7 +17,7 @@ class Experiment():
     def __init__(self,  amplitude=.4, layers=2, n_actions=10, number_phases=2,
                 bound_displacements=1, states_wasted=10**4,
                 ep_method ="exp-decay", min_ep = 0.01,ep=0.01,
-                tau_ep=1000, searching_method="ep_greedy"):
+                tau_ep=1000, searching_method="ep_greedy", experiment_label="", channel={}):
 
         self.info = f"amplitude: {amplitude}\n" \
                 f"layers: {layers}\n"\
@@ -46,6 +46,8 @@ class Experiment():
         for k in range(1,int(np.log10(self.states_wasted))): #the +1 is just in case...
             self.saving_times = np.append(self.saving_times, np.arange(10**k, 10**(k+1), 10**k))
 
+        self.experiment_label = str(self.layers)+"L_"+str(self.n_actions)+"a"+experiment_label
+        self.channel = channel
 
     def train(self, number_bobs=12):
         self.number_bobs = str(number_bobs)
@@ -80,7 +82,7 @@ class Experiment():
 
         bob = agent.Agent(amplitude = self.amplitude,layers = self.layers, n_actions=self.n_actions,
                     bound_displacements = self.bound_displacements, searching_method= self.searching_method,
-                    ep=self.ep, ep_method=self.ep_method,  min_ep=self.min_ep, tau_ep = self.tau_ep)
+                    ep=self.ep, ep_method=self.ep_method,  min_ep=self.min_ep, tau_ep = self.tau_ep, channel=channel)
 
         bob.probability_success_greedy_q=[]
 
@@ -94,15 +96,19 @@ class Experiment():
 
         times_being=[]
 
-        alice = environment.Environment(amplitude = self.amplitude, layers= self.layers)
+        alice = environment.Environment(amplitude = self.amplitude, layers= self.layers, channel=self.channel)
 
 
         bob.cumulative_reward_evolution = []
         bob.probability_success_greedy_q= []
 
         for k in tqdm(range(1,self.states_wasted+1)):
-            alice.pick_phase()
             bob.reset()
+            alice.reset()
+
+            alice.pick_phase()
+            alice.act_channel()
+
             for layer in range(bob.layers):
                 action_index, action = bob.select_action()
                 bob.layer +=1
@@ -193,7 +199,7 @@ class Experiment():
 
 
     def save_data(self):
-        name_folder = str(self.layers)+"L_"+str(self.n_actions)+"a"
+        name_folder = self.experiment_label
         self.number_run = Record(name_folder).number_run
         print("saving the results at ", os.getcwd())
         files = ["../../temporal_data/q_guess_avg_evolution.npy","../../temporal_data/n_guess_avg_evolution.npy", "../../temporal_data/q_disp_avg_evolution.npy","../../temporal_data/n_disp_avg_evolution.npy","../../temporal_data/learning_curves.npy", "../../temporal_data/minimax.npy", "../../temporal_data/stds.npy"]
@@ -211,7 +217,6 @@ class Experiment():
             f.write(self.info + "\n **** number_bobs: "+str(self.number_bobs))
             f.close()
 
-
         os.chdir("../..")
         # os.makedirs("reuslts",exist_ok=True)
         # os.system("mv {} results".format(name_folder))
@@ -225,13 +230,17 @@ if __name__ == "__main__":
     n_actions = 10
     searching_method = "ep-greedy"
     bound_displacements = 1
-    total_episodes = 10**5
+    total_episodes = 10**3
     ep_method="exp-decay"
     nbobs=12
 
+    experiment_label="_LC"
+    channel = {"class":"compound_lossy", "params":[.5,0.01]}
+
 
     exper = Experiment(searching_method = searching_method, layers=layers, ep=ep,n_actions=n_actions,
-        bound_displacements=bound_displacements, states_wasted=total_episodes, ep_method= ep_method)
+        bound_displacements=bound_displacements, states_wasted=total_episodes, ep_method= ep_method,
+         experiment_label=experiment_label, channel=channel)
 
     exper.average_bobs(nbobs)
     exper.collect_results(nbobs)
