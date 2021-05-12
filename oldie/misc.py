@@ -39,7 +39,6 @@ class Record():
 
 
 
-
 class Complex(complex):
     def __repr__(self):
         rp = '%7.5f' % self.real if not self.pureImag() else ''

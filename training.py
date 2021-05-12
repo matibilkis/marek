@@ -51,6 +51,7 @@ class Experiment():
 
     def train(self, number_bobs=12):
         self.number_bobs = str(number_bobs)
+        self.info+=f"Number of Bobs: {number_bobs }\n" 
         self.average_bobs(number_bobs=number_bobs)
         self.save_data()
         return
@@ -225,28 +226,29 @@ class Experiment():
 
 if __name__ == "__main__":
 
-    ep = 0.01
+    ep = 0.3
     layers = 2
-    n_actions = 30
+    n_actions = 10
     searching_method = "ep-greedy"
     bound_displacements = 1
-    total_episodes = 10**4
-    tau_ep=500
-    ep_method="exp-decay"
+    total_episodes = 5*10**5
+    tau_ep=100
+    ep_method="normal"
     nbobs=1
+    min_ep=0.01
 
     experiment_label="_LC"
-    channel = {"class":"compound_lossy", "params":[.5,ep]}
+    channel = {"class":"compound_lossy", "params":[.5,0.01]}
 
 
     exper = Experiment(searching_method = searching_method, layers=layers, ep=ep,n_actions=n_actions,
-        bound_displacements=bound_displacements, states_wasted=total_episodes, ep_method= ep_method, tau_ep=tau_ep,
+        bound_displacements=bound_displacements, states_wasted=total_episodes, ep_method= ep_method, tau_ep=tau_ep,min_ep=min_ep,
          experiment_label=experiment_label, channel=channel)
     #
-    exper.training_bob(1)
-    # exper.average_bobs(nbobs)
-    # exper.collect_results(nbobs)
-    # exper.save_data()
+    # exper.training_bob(1)
+    exper.average_bobs(8)
+    exper.collect_results(nbobs)
+    exper.save_data()
 
 
 

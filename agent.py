@@ -28,13 +28,13 @@ class Agent(basics.Basics):
         self.reset()
 
 
-    def P(self,a,b,et, outcome):
+    def PP(self,a,b,et, outcome):
         if self.channel != {}:
             assert self.channel["class"] == "compound_lossy"
             prob_channel, epsilon = self.channel["params"]
             p0 = 0
             for p_chann, par in zip([prob_channel, 1-prob_channel], [epsilon, 1]):
-                p0 += np.exp(-abs((et*a*par)+b)**2)*p_chann
+                p0 += np.exp(-abs((et*a*np.sqrt(par))+b)**2)*p_chann
         else:
             p0 = np.exp(-abs((et*a)+b)**2)
 
@@ -201,5 +201,5 @@ class Agent(basics.Basics):
                 # if self.channel != {}:
                 #     p+=modified_P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*modified_P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
                 # else:
-                p+=self.P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
+                p+=self.PP(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.PP(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
             return p/self.number_phases
