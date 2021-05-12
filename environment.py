@@ -42,9 +42,36 @@ class Environment(basics.Basics):
         if hasattr(self, "channel"):
             if self.channel["class"] == "compound_lossy":
                 prob, epsilon = self.channel["params"]
-                if np.random.random() < prob:
+                if np.random.random() <= prob:
                     self.amplitude *=np.sqrt(epsilon)
         return
+
+
+    def lambda_q(self,q):
+        """Auxiliary method to compute pretty good measurement bound (helstrom in this case, see Holevo book)"""
+        number_states = self.number_phases
+        nsig = self.amplitude**2 #in case you change...
+        c=0
+        for m in range(1,number_states+1):
+            c+= np.exp(((1-q)*(2*np.pi*(1j)*m)/number_states) + nsig*np.exp(2*np.pi*(1j)*m/number_states))
+        return c*np.exp(-nsig)
+
+
+    def helstrom(self):
+        """
+        Returns helstrom probability sucess
+        Eq (9) M-ary-state phase-shift-keying discrimination below the homodyne limit
+        F. E. Becerra,1,* J. Fan,1 G. Baumgartner,2 S. V. Polyakov,1 J. Goldhar,3 J. T. Kosloski,4 and A. Migdall1
+        """
+        nsig=self.amplitude**2
+        number_states=self.number_phases
+
+        prob = 0
+        for q in range(1,number_states+1):
+            prob += np.sqrt(self.lambda_q(q))
+        prob = 1 - (prob/number_states)**2
+
+        return np.real(1-prob)
 
 
 

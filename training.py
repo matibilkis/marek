@@ -82,7 +82,7 @@ class Experiment():
 
         bob = agent.Agent(amplitude = self.amplitude,layers = self.layers, n_actions=self.n_actions,
                     bound_displacements = self.bound_displacements, searching_method= self.searching_method,
-                    ep=self.ep, ep_method=self.ep_method,  min_ep=self.min_ep, tau_ep = self.tau_ep, channel=channel)
+                    ep=self.ep, ep_method=self.ep_method,  min_ep=self.min_ep, tau_ep = self.tau_ep, channel=self.channel)
 
         bob.probability_success_greedy_q=[]
 
@@ -227,24 +227,26 @@ if __name__ == "__main__":
 
     ep = 0.01
     layers = 2
-    n_actions = 10
+    n_actions = 30
     searching_method = "ep-greedy"
     bound_displacements = 1
-    total_episodes = 10**3
+    total_episodes = 10**4
+    tau_ep=500
     ep_method="exp-decay"
-    nbobs=12
+    nbobs=1
 
     experiment_label="_LC"
-    channel = {"class":"compound_lossy", "params":[.5,0.01]}
+    channel = {"class":"compound_lossy", "params":[.5,ep]}
 
 
     exper = Experiment(searching_method = searching_method, layers=layers, ep=ep,n_actions=n_actions,
-        bound_displacements=bound_displacements, states_wasted=total_episodes, ep_method= ep_method,
+        bound_displacements=bound_displacements, states_wasted=total_episodes, ep_method= ep_method, tau_ep=tau_ep,
          experiment_label=experiment_label, channel=channel)
-
-    exper.average_bobs(nbobs)
-    exper.collect_results(nbobs)
-    exper.save_data()
+    #
+    exper.training_bob(1)
+    # exper.average_bobs(nbobs)
+    # exper.collect_results(nbobs)
+    # exper.save_data()
 
 
 

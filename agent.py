@@ -20,24 +20,28 @@ class Agent(basics.Basics):
         self.min_ep=min_ep
         self.tau_ep=tau_ep
 
+        self.channel = channel
         self.learning_rate = learning_rate
-        if channel != {}:
-            self.channel = channel
-            assert self.channel["class"] == "compound_lossy"
-            prob_channel, epsilon = self.channel["params"]
-
-            def P(self,a,b,et, outcome):
-                p0 = 0
-                for p_chann, par in zip([prob_channel, 1-prob_channel], [epsilon, 1]):
-                    p0 += np.exp(-abs((et*a*par)+b)**2)*p_chann
-                if n ==0:
-                    return p0
-                else:
-                    return 1-p0
 
         self.define_actions()
         self.create_tables()
         self.reset()
+
+
+    def P(self,a,b,et, outcome):
+        if self.channel != {}:
+            assert self.channel["class"] == "compound_lossy"
+            prob_channel, epsilon = self.channel["params"]
+            p0 = 0
+            for p_chann, par in zip([prob_channel, 1-prob_channel], [epsilon, 1]):
+                p0 += np.exp(-abs((et*a*par)+b)**2)*p_chann
+        else:
+            p0 = np.exp(-abs((et*a)+b)**2)
+
+        if outcome ==0:
+            return p0
+        else:
+            return 1-p0
 
 
     def create_tables(self):
@@ -194,5 +198,8 @@ class Agent(basics.Basics):
                 ph = self.possible_phases[ph]
 
                 #p+=(1-self.pflip)*self.P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2) + (self.pflip*self.P(-ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(-ph*self.amplitude, beta2 ,1/np.sqrt(2), n2))
+                # if self.channel != {}:
+                #     p+=modified_P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*modified_P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
+                # else:
                 p+=self.P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
             return p/self.number_phases

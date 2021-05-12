@@ -35,3 +35,21 @@ class Record():
         os.chdir("run_"+str(int(a)+1)) #I leave you in this directory
         os.makedirs("tables")
         return int(a)+1
+
+
+class Complex(complex):
+    def __repr__(self):
+        rp = '%7.5f' % self.real if not self.pureImag() else ''
+        ip = '%7.5fj' % self.imag if not self.pureReal() else ''
+        conj = '' if (
+            self.pureImag() or self.pureReal() or self.imag < 0.0
+        ) else '+'
+        return '0.0' if (
+            self.pureImag() and self.pureReal()
+        ) else rp + conj + ip
+
+    def pureImag(self):
+        return abs(self.real) < 1e-14
+
+    def pureReal(self):
+        return abs(self.imag) < 1e-14
