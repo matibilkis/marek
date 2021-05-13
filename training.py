@@ -43,7 +43,7 @@ class Experiment():
 
 
         self.saving_times = []
-        for k in range(1,int(np.log10(self.states_wasted))): #the +1 is just in case...
+        for k in range(1,int(np.log10(self.states_wasted)+1)): #the +1 is just in case...
             self.saving_times = np.append(self.saving_times, np.arange(10**k, 10**(k+1), 10**k))
 
         self.experiment_label = str(self.layers)+"L_"+str(self.n_actions)+"a"+experiment_label
@@ -51,7 +51,7 @@ class Experiment():
 
     def train(self, number_bobs=12):
         self.number_bobs = str(number_bobs)
-        self.info+=f"Number of Bobs: {number_bobs }\n" 
+        self.info+=f"Number of Bobs: {number_bobs }\n"
         self.average_bobs(number_bobs=number_bobs)
         self.save_data()
         return
@@ -135,7 +135,8 @@ class Experiment():
             #         q_guess_tables.append(bob.guess_q_table)
             #         n_guess_tables.append(bob.guess_visits_counter)
 
-        learning_curves = [self.saving_times, bob.cumulative_reward_evolution, bob.probability_success_greedy_q]
+        learning_curves = [times_being, bob.cumulative_reward_evolution, bob.probability_success_greedy_q]
+
 
         os.makedirs("temporal_data",exist_ok=True)
         np.save("temporal_data/"+str(bob_id)+"data_learning_curve",np.array(learning_curves))
@@ -150,7 +151,8 @@ class Experiment():
     def collect_results(self, number_bobs):
         data_agents = {}
 
-        tot_ep = len(self.saving_times)
+        self.times_being = np.load("temporal_data/"+str(0)+"data_learning_curve.npy",allow_pickle=True)[0]
+        tot_ep = len(self.times_being)
         r_cumulative = np.zeros(tot_ep)
         pr_gre = np.zeros(tot_ep)
 
@@ -180,7 +182,7 @@ class Experiment():
         min_r_cumulative, max_r_cumulative = [], []
         min_pr_gre, max_pr_gre = [], []
 
-        for index_time in range(len(self.saving_times)):
+        for index_time in range(len(self.times_being)):
 
             min_r_cumulative.append(min([data_agents[str(i)][1][index_time] for i in range(number_bobs)]))
             max_r_cumulative.append(max([data_agents[str(i)][1][index_time] for i in range(number_bobs)]))
@@ -190,7 +192,7 @@ class Experiment():
 
 
 
-        learning_curves = [self.saving_times, r_cumulative, pr_gre]
+        learning_curves = [self.times_being, r_cumulative, pr_gre]
         stds = [r_cumulative_std, pr_gre_std]
         min_max = [min_r_cumulative, max_r_cumulative, min_pr_gre, max_pr_gre]
         np.save("temporal_data/learning_curves", learning_curves)
@@ -232,10 +234,10 @@ if __name__ == "__main__":
     searching_method = "ep-greedy"
     bound_displacements = 1
     total_episodes = 5*10**5
-    tau_ep=100
-    ep_method="normal"
-    nbobs=1
-    min_ep=0.01
+    tau_ep=(5*10**4)/(3*np.log(10))
+    ep_method="exp-decay"
+    min_ep=0.001
+    nbobs=24
 
     experiment_label="_LC"
     channel = {"class":"compound_lossy", "params":[.5,0.01]}
@@ -246,7 +248,7 @@ if __name__ == "__main__":
          experiment_label=experiment_label, channel=channel)
     #
     # exper.training_bob(1)
-    exper.average_bobs(8)
+    exper.average_bobs(nbobs)
     exper.collect_results(nbobs)
     exper.save_data()
 
