@@ -196,10 +196,38 @@ class Agent(basics.Basics):
                     beta2, label2 = b11, l11
                 ph = np.argmax(self.guess_q_table[n1,n2,l0,label2,:])
                 ph = self.possible_phases[ph]
-
-                #p+=(1-self.pflip)*self.P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2) + (self.pflip*self.P(-ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(-ph*self.amplitude, beta2 ,1/np.sqrt(2), n2))
-                # if self.channel != {}:
-                #     p+=modified_P(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*modified_P(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
-                # else:
                 p+=self.PP(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.PP(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
+
+
+        elif self.layers == 3:
+            l0 = np.where(self.q_table[0] == np.max(self.q_table[0]))[0]
+            b0, l0 = self.give_action_value(l0)
+
+            l10 = np.where(self.q_table[1][0][l0,:] == np.max(self.q_table[1][0][l0,:]))[0]
+            b10, l10 = self.give_action_value(l10)
+
+            l11 = np.where(self.q_table[1][1][l0,:] == np.max(self.q_table[1][1][l0,:]))[0]
+            b11, l11 = self.give_action_value(l11)
+
+            l200 = np.where(self.q_table[2][0,0][l0,l10,:] == np.max(self.q_table[2][0,0][l0,l10,:]))[0]
+            b200, l200 = self.give_action_value(l200)
+
+            l201 = np.where(self.q_table[2][0,1][l0,l11,:] == np.max(self.q_table[2][0,0][l0,l10,:]))[0]
+            b201, l201 = self.give_action_value(l200)
+
+            l200 = np.where(self.q_table[2][0,0][l0,l10,:] == np.max(self.q_table[2][0,0][l0,l10,:]))[0]
+            b11, l11 = self.give_action_value(l200)
+
+            l200 = np.where(self.q_table[2][0,0][l0,l10,:] == np.max(self.q_table[2][0,0][l0,l10,:]))[0]
+            b11, l11 = self.give_action_value(l200)
+
+            for n1,n2 in zip([0,0,1,1],[0,1,0,1]):
+                if n1==0:
+                    beta2, label2 = b10, l10
+                else:
+                    beta2, label2 = b11, l11
+                ph = np.argmax(self.guess_q_table[n1,n2,l0,label2,:])
+                ph = self.possible_phases[ph]
+                p+=self.PP(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.PP(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
+
             return p/self.number_phases
