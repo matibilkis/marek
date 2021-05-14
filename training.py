@@ -237,7 +237,7 @@ if __name__ == "__main__":
     tau_ep=(5*10**4)/(3*np.log(10))
     ep_method="exp-decay"
     min_ep=0.001
-    nbobs=1
+    nbobs=24
 
     experiment_label="_LC"
     channel = {"class":"compound_lossy", "params":[.5,0.01]}
