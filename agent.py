@@ -35,6 +35,7 @@ class Agent(basics.Basics):
             p0 = 0
             for p_chann, par in zip([prob_channel, 1-prob_channel], [epsilon, 1]):
                 p0 += np.exp(-abs((et*a*np.sqrt(par))+b)**2)*p_chann
+                print(p0, epsilon)
         else:
             p0 = np.exp(-abs((et*a)+b)**2)
 
@@ -176,10 +177,11 @@ class Agent(basics.Basics):
             for n1 in [0,1]:
                 ph = self.possible_phases[np.argmax(self.guess_q_table[n1,l,:])]
                 #p+=(1-self.pflip)*self.P(ph*self.amplitude, b ,1, n1) +  self.pflip*self.P(-ph*self.amplitude, b ,1, n1)
-                p+=self.P(ph*self.amplitude, b ,1, n1)
+                p+=self.PP(ph*self.amplitude, b ,1, n1)
             return p/self.number_phases
 
         elif self.layers == 2:
+            ep_channel=self.channel["params"][1]
             l0 = np.where(self.q_table[0] == np.max(self.q_table[0]))[0]
             b0, l0 = self.give_action_value(l0)
 
@@ -196,8 +198,9 @@ class Agent(basics.Basics):
                     beta2, label2 = b11, l11
                 ph = np.argmax(self.guess_q_table[n1,n2,l0,label2,:])
                 ph = self.possible_phases[ph]
-                p+=self.PP(ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.PP(ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
-
+                for att in [ep_channel, 1]:
+                    p+=self.P(np.sqrt(att)*ph*self.amplitude, b0 ,1/np.sqrt(2), n1)*self.P(np.sqrt(att)*ph*self.amplitude, beta2 ,1/np.sqrt(2), n2)
+            return p/4
 
         elif self.layers == 3:
             l0 = np.where(self.q_table[0] == np.max(self.q_table[0]))[0]

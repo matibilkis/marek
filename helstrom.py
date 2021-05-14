@@ -8,7 +8,7 @@ class Helstrom():
 
 
     def overlap(self,a,b):
-        return np.exp(-0.5*(a-b)**2)
+        return np.exp(-0.5*((a-b))**2)
 
     def __call__(self):
         alpha_plus = np.array([[1,0,0,0]])
