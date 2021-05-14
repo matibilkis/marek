@@ -3,6 +3,59 @@ import cmath
 import os
 import pickle
 
+def insert(v,M):
+    """
+    Takes v, M and returns an array that has, for each element of v, a matrix M
+
+    Example:
+    x = [x0,x1]
+    y = [[0,0],[0,1],[1,0],[1,1]]
+    insert(x,y) returns
+
+    [x0 0 0]
+    [x0 0 1]
+    [x0 1 0]
+    [x0 1 1]
+    [x1 0 0]
+    [x1 0 1]
+    [x1 1 0]
+    [x1 1 1]
+    """
+    try:
+        a=M.shape
+        if len(a)<2:
+            a.append(1)
+    except Exception:
+         a = [1,len(M)]
+    result=np.zeros((a[0]*len(v),a[1] +1 )).astype(int)
+
+    f = len(v)+1
+    cucu=0
+    for k in v:
+        result[cucu:(cucu+a[0]),0] = k
+        result[cucu:(cucu+a[0]),1:] = M
+        cucu+=a[0]
+    return result
+
+
+
+def outcomes_universe(L):
+    """
+    Takes L (# of photodetections in the experiment) and returns
+    all possible outcomes in a matrix of 2**L rows by L columns,
+    which are all possible sequence of outcomes you can ever get.
+    """
+    a = np.array([0,1])
+    two_outcomes = np.array([[0,0],[0,1],[1,0],[1,1]]).astype(int)
+    if L<2:
+        return np.array([0,1]).astype(int)
+    elif L==2:
+        return two_outcomes
+    else:
+        x = insert(a,two_outcomes)
+        for i in range(L-3):
+            x = insert(a,x)
+        return x.astype(int)
 
 class Record():
     def __init__(self, FolderName):
