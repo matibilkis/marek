@@ -60,8 +60,6 @@ def outcomes_universe(L):
 class Record():
     def __init__(self, FolderName):
 
-        if not os.path.exists("bounds_optimals_and_limits"):
-            os.makedirs("bounds_optimals_and_limits")
         if not os.path.exists(FolderName):
             os.makedirs(FolderName)
         os.chdir(FolderName)
