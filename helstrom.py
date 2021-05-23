@@ -19,7 +19,7 @@ class Helstrom():
         a0=np.sqrt(1-a**2)
         alpha_minus = np.array([[a, a0,0,0]])
 
-        ## self.overlap <beta | v1>
+        #### self.overlap <beta | v1>
         b = self.overlap(self.beta, self.alpha)
         ## self.overlap <self.beta | v2>
         c = self.overlap(self.beta, -self.alpha ) - a*b
