@@ -1,0 +1,12 @@
+executable=subash.sh
+maxiter=12000
+layers=3
+args=$(amplitude) $(layers) $(maxiter)
+output = ../jobs/$(amplitude)_$(layers).out
+error = ../jobs/$(amplitude)_$(layers).err
+log = ../jobs/$(amplitude)_$(layers).log
+request_memory = 2 GB
+request_cpus = 1
++flavour="expresso"
+
+queue from seq 0.01 4.0 0.1|

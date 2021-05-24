@@ -1,7 +1,0 @@
-amplitude: 0.4
-layers: 2
-n_actions per layer: 10
-n_phases: 2
-states_wasted: 500000
-
- **** number_bobs: 1
