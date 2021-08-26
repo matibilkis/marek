@@ -16,7 +16,7 @@ class Basics():
 
     def make_attenuations(self,layers):
         if layers == 1:
-            return [0]
+            return [0]#
         else:
             ats=[0]
             for i in range(layers-1):
