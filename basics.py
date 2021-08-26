@@ -64,7 +64,6 @@ class Basics():
                 for j in range(self.layers):
                     r =  np.prod( np.sin(self.at[:j]))
                     t = np.cos(self.at[j])
-
                     term = term*self.P(phase*self.amplitude,bb[j],r*t, ot[j])
                 compare.append(term)
             p+=np.max(compare)
