@@ -12,5 +12,5 @@ For instance, this kind of learning curves are obtained:
 
 ![alt text](https://github.com/matibilkis/marek/blob/master/ploting_programs/17jan_enh-QLexp.png).
 
-## Find the paper!: ![here](https://github.com/matibilkis/marek/blob/master/paper_preprint.pdf).
+##[Check out our paper!](https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.2.033295).
 
